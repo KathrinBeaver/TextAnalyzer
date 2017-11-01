@@ -26,6 +26,7 @@ public class TestBagOfWords {
 
     @Test
     public void test() throws FileNotFoundException {
+        //test
         File rootDir = new ClassPathResource("testFile.txt").getFile();
         LabelAwareSentenceIterator iter = new LabelAwareFileSentenceIterator(rootDir);
         TokenizerFactory tokenizerFactory = new DefaultTokenizerFactory();
