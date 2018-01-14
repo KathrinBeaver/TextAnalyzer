@@ -7,16 +7,15 @@ package com.mai.textanalyzer.bag_of_words.test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import org.datavec.api.util.ClassPathResource;
-import org.deeplearning4j.bagofwords.vectorizer.BagOfWordsVectorizer;
-import org.deeplearning4j.models.word2vec.VocabWord;
-import org.deeplearning4j.text.sentenceiterator.labelaware.LabelAwareFileSentenceIterator;
-import org.deeplearning4j.text.sentenceiterator.labelaware.LabelAwareSentenceIterator;
+import java.util.Scanner;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
-import org.junit.Test;
-import org.nd4j.linalg.api.ndarray.INDArray;
+import org.apache.log4j.Logger;
+import org.deeplearning4j.models.word2vec.Word2Vec;
+import org.deeplearning4j.text.sentenceiterator.LineSentenceIterator;
+import org.deeplearning4j.text.sentenceiterator.SentenceIterator;
+import org.deeplearning4j.text.sentenceiterator.SentencePreProcessor;
+import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
 
 /**
  *
@@ -24,26 +23,77 @@ import org.nd4j.linalg.api.ndarray.INDArray;
  */
 public class TestBagOfWords {
 
-    @Test
-    public void test() throws FileNotFoundException {
-        //test
-        File rootDir = new ClassPathResource("testFile.txt").getFile();
-        LabelAwareSentenceIterator iter = new LabelAwareFileSentenceIterator(rootDir);
-        TokenizerFactory tokenizerFactory = new DefaultTokenizerFactory();
-        BagOfWordsVectorizer vectorizer = new BagOfWordsVectorizer.Builder()
-                .setMinWordFrequency(1)
-                .setStopWords(new ArrayList<String>())
-                .setTokenizerFactory(tokenizerFactory)
-                .setIterator(iter)
-                //                .labels(labels)
-                //                .cleanup(true)
+    public static void main(String[] args) throws FileNotFoundException {
+        Logger log = Logger.getLogger(TestBagOfWords.class);
+
+        log.info("Load data....");
+        SentenceIterator iter = new LineSentenceIterator(new File("D:\\testCopyDir\\dictionary.txt"));
+        iter.setPreProcessor(new SentencePreProcessor() {
+            @Override
+            public String preProcess(String sentence) {
+                return sentence.toLowerCase();
+            }
+        });
+
+        // Split on white spaces in the line to get words
+        TokenizerFactory t = new DefaultTokenizerFactory();
+        t.setTokenPreProcessor(new CommonPreprocessor());
+
+        log.info("Building model....");
+        Word2Vec vec = new Word2Vec.Builder()
+                .minWordFrequency(5)
+                .iterations(1)
+                .layerSize(100)
+                .seed(42)
+                .windowSize(5)
+                .iterate(iter)
+                .tokenizerFactory(t)
                 .build();
 
-        vectorizer.fit();
-        VocabWord word = vectorizer.getVocabCache().wordFor("file.");
-        // vectorizer.vectorize();
-        INDArray array = vectorizer.transform("very data cat dog xzxz xz xz xz");
-        System.out.println(array);
+        log.info("Fitting Word2Vec model....");
+        vec.fit();
+
+        Scanner scaner = new Scanner(System.in);
+        while (true) {
+            String nextWord = scaner.nextLine();
+            if (nextWord.isEmpty()) {
+                break;
+            }
+            System.out.println("10 Words closest to " + nextWord + "': " + vec.wordsNearest(nextWord, 10));
+        }
+
+//        int vectorSize = (int) vectorizer.numWordsEncountered();
+//        int nEpochs = 1;        //Number of epochs (full passes of training data) to train on
+//
+//        Nd4j.getMemoryManager().setAutoGcWindow(10000);  //https://deeplearning4j.org/workspaces
+//
+//        //Set up network configuration
+//        MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
+//                .updater(Updater.ADAM) //To configure: .updater(Adam.builder().beta1(0.9).beta2(0.999).build())
+//                .regularization(true).l2(1e-5)
+//                .weightInit(WeightInit.XAVIER)
+//                .gradientNormalization(GradientNormalization.ClipElementWiseAbsoluteValue).gradientNormalizationThreshold(1.0)
+//                .learningRate(2e-2)
+//                .trainingWorkspaceMode(WorkspaceMode.SEPARATE).inferenceWorkspaceMode(WorkspaceMode.SEPARATE) //https://deeplearning4j.org/workspaces
+//                .list()
+//                .layer(0, new GravesLSTM.Builder().nIn(vectorSize).nOut(256)
+//                        .activation(Activation.TANH).build())
+//                .layer(1, new RnnOutputLayer.Builder().activation(Activation.SOFTMAX)
+//                        .lossFunction(LossFunctions.LossFunction.MCXENT).nIn(256).nOut(2).build())
+//                .pretrain(false).backprop(true).build();
+//
+//        MultiLayerNetwork net = new MultiLayerNetwork(conf);
+//        net.init();
+//        net.setListeners(new ScoreIterationListener(1));
+//
+//        System.out.println("Starting training");
+//        for (int i = 0; i < nEpochs; i++) {
+//            net.fit(array);
+//            System.out.println("Epoch " + i + " complete. Starting evaluation:");
+//
+//            Evaluation evaluation = net.evaluate(test);
+//            System.out.println(evaluation.stats());
+//        }
     }
 
 }
