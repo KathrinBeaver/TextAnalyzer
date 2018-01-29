@@ -5,15 +5,13 @@
  */
 package com.mai.textanalyzer.ui;
 
+import com.mai.textanalyzer.vectorization.ui.VectorizationPanel;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 
 /**
  *
@@ -24,21 +22,11 @@ public class MainUI extends UI {
 
     @Override
     protected void init(VaadinRequest request) {
-        final VerticalLayout layout = new VerticalLayout();
-
-        final TextField name = new TextField();
-        name.setCaption("Type your name here:");
-
-        Button button = new Button("Click Me");
-        button.addClickListener(e -> {
-            layout.addComponent(new Label("Thanks " + name.getValue()
-                    + ", it works!"));
-        });
-
-        layout.addComponents(name, button);
+        final HorizontalLayout layout = new HorizontalLayout();
+        VectorizationPanel panel = new VectorizationPanel();
+        layout.addComponents(panel);
         layout.setMargin(true);
         layout.setSpacing(true);
-
         setContent(layout);
     }
 
