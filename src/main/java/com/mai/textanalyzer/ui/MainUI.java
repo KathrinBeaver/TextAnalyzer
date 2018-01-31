@@ -27,7 +27,8 @@ public class MainUI extends UI {
         VectorizationPanel panel = new VectorizationPanel();
         layout.addComponents(panel);
         layout.setMargin(true);
-        layout.setSpacing(true);
+//        layout.setSpacing(true);
+         
         setContent(layout);
     }
 
