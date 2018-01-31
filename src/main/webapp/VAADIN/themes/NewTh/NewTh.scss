@@ -1,0 +1,167 @@
+// Global variable overrides. Must be declared before importing Valo.
+
+// Modify the base color of the theme
+$v-background-color: #f0f0f0;
+$v-focus-color: #008080;
+$v-focus-style: 0 0 0 0px $v-focus-color;
+//$v-selection-color: #008080;
+$v-app-loading-text: "Загрузка...";//русские буквы не работают, чтобы починить, после компиляции темы иди в styles.css и ищи .Speed2Theme .v-app-loading:after
+//$v-line-height: 5px;
+$v-font-size: 13px;
+$v-font-family: Arial,Helvetica,Tahoma,Verdana,sans-serif;
+$v-unit-size: 22px;
+$v-layout-margin-top: round($v-unit-size/3);
+$v-layout-margin-right: round($v-unit-size/3);
+$v-layout-margin-bottom: round($v-unit-size/3);
+$v-layout-margin-left: round($v-unit-size/3);
+//$v-border-radius: 8px;
+
+// Defines the plaintext font size, weight and family. Font size affects general component sizing.
+//$v-font-size: 16px;
+//$v-font-weight: 300;
+//$v-font-family: "Open Sans", sans-serif;
+
+// Defines the border used by all components.
+//$v-border: 1px solid (v-shade 0.7);
+//$v-border-radius: 4px;
+
+// Affects the color of some component elements, e.g Button, Panel title, etc
+//$v-background-color: hsl(210, 0%, 98%);
+// Affects the color of content areas, e.g  Panel and Window content, TextField input etc
+//$v-app-background-color: $v-background-color;
+
+// Affects the visual appearance of all components
+//$v-gradient: v-linear 8%;
+//$v-bevel-depth: 30%;
+//$v-shadow-opacity: 5%;
+
+// Defines colors for indicating status (focus, success, failure)
+//$v-focus-color: valo-focus-color(); // Calculates a suitable color automatically
+//$v-friendly-color: #2c9720;
+//$v-error-indicator-color: #ed473b;
+
+// For more information, see: https://vaadin.com/book/-/page/themes.valo.html
+// Example variants can be copy/pasted from https://vaadin.com/wiki/-/wiki/Main/Valo+Examples
+
+@import "../valo/valo.scss";
+
+@mixin NewTh {
+    @include valo;
+    //раскраска нотификэйшина об истечении сесии, переделать на чтение из v-Notification-error
+    .v-Notification-system{        
+        background-color: #ed473b;
+    }
+    
+    //раскраска трей нотификэйшена
+    .v-Notification-tray{
+        border: 1px solid gray; 
+        background: $v-focus-color none repeat scroll 0 0;
+        color: white;
+    }
+
+    .v-table-cell-content-bad_speed_limit {
+        color: red;
+        //  background-image: url("icons/error.png");
+        //  background-repeat: no-repeat;
+        //  background-position-y: 2px;
+        //   text-indent: 10px;
+    }
+
+    // Insert your own theme rules here
+    //у полоски меню,кнопка выход справа 
+    .v-menubar > .v-menubar-menuitem-right {
+        float: right;
+        display: inline;
+        .v-menubar-menuitem-caption {
+            white-space: nowrap;
+        }
+    }
+    .v-menubar {
+        white-space: normal;//кнопка выход справа 
+        border-radius: 0px;
+    }
+    //для переноса строк в таблице
+    .v-table-main_way_edit_table  .v-table-cell-wrapper {
+        overflow: hidden;
+        white-space: pre;
+        padding: 3px;
+    }
+
+    //таблица списка приказов
+    .v-table-with-height > .v-table-body > div > .v-table-table > tbody > .v-table-row {
+        height: 35px;
+    }
+    .v-table-with-height > .v-table-body > div > .v-table-table > tbody > .v-table-row-odd {
+        height: 35px;
+    }
+
+    .v-panel-content {
+        padding: 5px;
+    }
+    //стиль для ссылки внутри выделенной строки таблицы
+    .v-selected > .v-table-cell-content > .v-table-cell-wrapper > .v-button-link {
+        color: #d0d0d0;
+    }
+    .v-selected > .v-table-cell-content > .v-table-cell-wrapper > .v-button-link:hover {
+        color: white;
+    }
+    .v-selected > .v-table-cell-content > .v-table-cell-wrapper > .v-horizontallayout > .v-slot > .v-button-link {
+        color: #d0d0d0;
+    }
+    .v-selected > .v-table-cell-content > .v-table-cell-wrapper > .v-horizontallayout > .v-slot > .v-button-link:hover {
+        color: white;
+    }
+    .v-button-smallPadding {
+        padding: 0 4px;
+    }
+
+    .v-button-noPadding {
+        padding: 0 0px;
+    }
+
+    .v-button-icon-align-right-for-arrow {
+        @include valo-button-icon-align-right-style-for-arrow;
+    }
+
+    .v-textfield-readonly {
+        border: 0px solid;
+        border-color: inherit;
+        background-color: inherit;
+    }
+
+    //отступы сверху и снизу у форм лэйаута
+    .v-formlayout-margin-top > tbody > .v-formlayout-firstrow > .v-formlayout-captioncell, 
+    .v-formlayout-margin-top > tbody > .v-formlayout-firstrow > .v-formlayout-contentcell,
+    .v-formlayout-margin-top > tbody > .v-formlayout-firstrow > .v-formlayout-errorcell {
+        padding-top: 0px;
+    }
+    .v-formlayout-margin-bottom > tbody > .v-formlayout-lastrow > .v-formlayout-captioncell,
+    .v-formlayout-margin-bottom > tbody > .v-formlayout-lastrow > .v-formlayout-contentcell,
+    .v-formlayout-margin-bottom > tbody > .v-formlayout-lastrow > .v-formlayout-errorcell {
+        padding-bottom: 0px;
+    }  
+    
+    .v-tabsheet-tabitemcell-caption_bold .v-caption {
+        font-weight: bold;
+    }
+
+}
+
+@mixin valo-button-icon-align-right-style-for-arrow {
+    [class*="wrap"] {
+        display: inline-block;
+    }
+
+    .v-icon {
+        float: right;
+        $padding-width: ceil($v-unit-size/2.4);
+        margin-left: $padding-width + ceil($padding-width/-5);
+        position: relative;
+        top: 4px;
+        left: -3px;
+
+        + span:not(:empty) {
+            margin-left: 0;
+        }
+    }
+}

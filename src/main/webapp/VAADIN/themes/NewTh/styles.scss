@@ -1,0 +1,17 @@
+@import "NewTh.scss";
+@import "addons.scss";
+
+// This file prefixes all rules with the theme name to avoid causing conflicts with other themes.
+// The actual styles should be defined in asuptheme.scss
+
+.NewTh {
+    @include addons;
+    @include NewTh ;
+    //для унаследованных значений скоростей
+    .inherited{
+        color: #909090;
+    }
+    .red{
+        color: red;
+    }
+}
