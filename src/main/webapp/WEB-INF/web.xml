@@ -11,18 +11,22 @@
     </session-config>
     
     <servlet>
-        <servlet-name>mainUI</servlet-name>
+        <servlet-name>PageUI</servlet-name>
         <servlet-class>
             com.vaadin.server.VaadinServlet
         </servlet-class>
         <init-param>
             <param-name>UI</param-name>
-            <param-value>com.mai.textanalyzer.ui.MainUI</param-value>
+            <param-value>com.mai.textanalyzer.web.vaadin.ui.PageUI</param-value>
         </init-param>
     </servlet>
     
     <servlet-mapping>
-        <servlet-name>mainUI</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <servlet-name>PageUI</servlet-name>
+        <url-pattern>/PageUI/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PageUI</servlet-name>
+        <url-pattern>/VAADIN/*</url-pattern>
     </servlet-mapping>
 </web-app>

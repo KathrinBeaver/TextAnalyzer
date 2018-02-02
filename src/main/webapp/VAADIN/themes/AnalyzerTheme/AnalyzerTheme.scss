@@ -45,7 +45,7 @@ $v-layout-margin-left: round($v-unit-size/3);
 
 @import "../valo/valo.scss";
 
-@mixin NewTh {
+@mixin AnalyzerTheme {
     @include valo;
     //раскраска нотификэйшина об истечении сесии, переделать на чтение из v-Notification-error
     .v-Notification-system{        
