@@ -73,7 +73,12 @@
             <artifactId>vaadin-client-compiled</artifactId>
             <version>8.2.1</version>
         </dependency>
-        
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-themes</artifactId>
+            <version>7.7.12</version>
+        </dependency>
+       
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
@@ -137,7 +142,7 @@
                 </executions>
             </plugin>
             
-<!--            <plugin>
+            <!--            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.6</version>
