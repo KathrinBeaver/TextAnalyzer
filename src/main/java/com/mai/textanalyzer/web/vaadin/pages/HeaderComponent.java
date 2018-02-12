@@ -5,7 +5,7 @@
  */
 package com.mai.textanalyzer.web.vaadin.pages;
 
-import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;

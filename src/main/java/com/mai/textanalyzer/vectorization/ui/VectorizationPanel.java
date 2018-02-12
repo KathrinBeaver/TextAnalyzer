@@ -21,7 +21,8 @@ public class VectorizationPanel extends CustomComponent {
     public VectorizationPanel() {
         EnumSet<VectorizationEnum> enumSet = EnumSet.allOf(VectorizationEnum.class);
         ComboBox cb = new ComboBox();
-        cb.setItems(enumSet);
+//        cb.setItems(enumSet);
+        cb.addItems(enumSet);
         cb.setWidth("250px");
         Panel panel = new Panel(new FormLayout(cb));
         panel.setCaption("Выберете способ векторизации:");

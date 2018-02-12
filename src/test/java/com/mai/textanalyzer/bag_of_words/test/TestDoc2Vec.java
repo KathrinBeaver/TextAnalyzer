@@ -14,8 +14,6 @@ import org.deeplearning4j.models.paragraphvectors.ParagraphVectors;
 import org.deeplearning4j.text.documentiterator.LabelAwareIterator;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
 import org.apache.log4j.Logger;
-import org.bytedeco.javacpp.Loader;
-import org.datavec.api.util.ClassPathResource;
 import org.deeplearning4j.models.embeddings.inmemory.InMemoryLookupTable;
 import org.deeplearning4j.models.word2vec.VocabWord;
 import org.deeplearning4j.text.documentiterator.FileLabelAwareIterator;
@@ -61,6 +59,13 @@ public class TestDoc2Vec {
                 .build();
 
         tokenizerFactory = new DefaultTokenizerFactory();
+        /*
+        CommonPreprocessor will apply the following regex to each token:
+        [\d\.:,"'\(\)\[\]|/?!;]+
+        So, effectively all numbers, punctuation symbols and some special symbols
+        are stripped off.
+        Additionally it forces lower case for all tokens.
+         */ 
         tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
 
         // ParagraphVectors training configuration
