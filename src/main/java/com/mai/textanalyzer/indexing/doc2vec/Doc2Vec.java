@@ -5,27 +5,17 @@
  */
 package com.mai.textanalyzer.indexing.doc2vec;
 
-import com.mai.textanalyzer.indexing.doc2vec.tools.LabelSeeker;
-import com.mai.textanalyzer.indexing.doc2vec.tools.MeansBuilder;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 import org.deeplearning4j.models.paragraphvectors.ParagraphVectors;
 import org.deeplearning4j.text.documentiterator.LabelAwareIterator;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
 import org.apache.log4j.Logger;
-import org.deeplearning4j.models.embeddings.WeightLookupTable;
-import org.deeplearning4j.models.embeddings.inmemory.InMemoryLookupTable;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
-import org.deeplearning4j.models.word2vec.VocabWord;
 import org.deeplearning4j.plot.BarnesHutTsne;
 import org.deeplearning4j.text.documentiterator.FileLabelAwareIterator;
-import org.deeplearning4j.text.documentiterator.LabelledDocument;
 import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
-import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.primitives.Pair;
 
 /**
  *
@@ -108,17 +98,17 @@ public class Doc2Vec {
                 //                .usePca(false)
                 .build();
         pv.getLookupTable().plotVocab(pv.getLookupTable().layerSize(), outPutFile);
-
     }
 
 //    void checkUnlabeledData() throws FileNotFoundException {
-        /*
+//        paragraphVectors.inferVector(text);
+//
+//        /*
 //      At this point we assume that we have model built and we can check
 //      which categories our unlabeled document falls into.
 //      So we'll start loading our unlabeled documents and checking them
 //         */
 //        File file = new File("D:\\testUnClassDoc");
-////        ClassPathResource unClassifiedResource = new ClassPathResource("D:\\testUnClassDoc");
 //        FileLabelAwareIterator unClassifiedIterator = new FileLabelAwareIterator.Builder()
 //                .addSourceFolder(file)
 //                .build();

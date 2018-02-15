@@ -3,42 +3,31 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mai.textanalyzer.bag_of_words.test;
+package com.mai.textanalyzer.indexing.word2vec;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Scanner;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
 import org.apache.log4j.Logger;
+import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
+import org.deeplearning4j.models.paragraphvectors.ParagraphVectors;
 import org.deeplearning4j.models.word2vec.Word2Vec;
-import org.deeplearning4j.nn.conf.GradientNormalization;
-import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
-import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
-import org.deeplearning4j.nn.conf.Updater;
-import org.deeplearning4j.nn.conf.WorkspaceMode;
-import org.deeplearning4j.nn.conf.layers.GravesLSTM;
-import org.deeplearning4j.nn.conf.layers.RnnOutputLayer;
-import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
-import org.deeplearning4j.nn.weights.WeightInit;
-import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
+import org.deeplearning4j.plot.BarnesHutTsne;
 import org.deeplearning4j.text.sentenceiterator.LineSentenceIterator;
 import org.deeplearning4j.text.sentenceiterator.SentenceIterator;
 import org.deeplearning4j.text.sentenceiterator.SentencePreProcessor;
 import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
-import org.nd4j.linalg.activations.Activation;
-import org.nd4j.linalg.factory.Nd4j;
-import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 /**
  *
  * @author Sergey
  */
-public class TestWord2Vec {
+public class Word2VecUtil {
+
+    private static Logger log = Logger.getLogger(Word2VecUtil.class);
 
     public static void main(String[] args) throws FileNotFoundException {
-        Logger log = Logger.getLogger(TestWord2Vec.class);
-
         log.info("Load data....");
         SentenceIterator iter = new LineSentenceIterator(new File("D:\\testCopyDir\\dictionary.txt"));
         iter.setPreProcessor(new SentencePreProcessor() {
@@ -47,8 +36,6 @@ public class TestWord2Vec {
                 return sentence.toLowerCase();
             }
         });
-        
-        
 
         // Split on white spaces in the line to get words
         TokenizerFactory t = new DefaultTokenizerFactory();
@@ -76,7 +63,6 @@ public class TestWord2Vec {
 //            }
 //            System.out.println("10 Words closest to " + nextWord + "': " + vec.wordsNearest(nextWord, 10));
 //        }
-        
 //        int batchSize = 64;     //Number of examples in each minibatch
 //        int vectorSize = 300;   //Size of the word vectors. 300 in the Google News model
 //        int nEpochs = 1;        //Number of epochs (full passes of training data) to train on
@@ -111,6 +97,28 @@ public class TestWord2Vec {
 //            Evaluation evaluation = net.evaluate(test);
 //            System.out.println(evaluation.stats());
 //        }
+    }
+
+    public static void saveModel(Word2Vec word2Vec, File file) {
+        WordVectorSerializer.writeWord2VecModel(word2Vec, file);
+    }
+
+    public static Word2Vec loadModel(File file) {
+        return WordVectorSerializer.readWord2VecModel(file);
+    }
+
+    public static void visualizingModel(ParagraphVectors pv, File outPutFile) {
+        BarnesHutTsne tsne = new BarnesHutTsne.Builder()
+                .setMaxIter(1000)
+                .stopLyingIteration(250)
+                .learningRate(500)
+                .useAdaGrad(false)
+                .theta(0.5)
+                .setMomentum(0.5)
+                .normalize(true)
+                //                .usePca(false)
+                .build();
+        pv.getLookupTable().plotVocab(pv.getLookupTable().layerSize(), outPutFile);
     }
 
 }
