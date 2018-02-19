@@ -23,7 +23,8 @@
     
     <servlet-mapping>
         <servlet-name>PageUI</servlet-name>
-        <url-pattern>/PageUI/*</url-pattern>
+        <url-pattern>/*</url-pattern>
+        <!--<url-pattern>/PageUI/*</url-pattern>-->
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>PageUI</servlet-name>
