@@ -23,9 +23,9 @@ import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreproc
  *
  * @author Sergey
  */
-public class Word2VecUtil {
+public class Word2VecUtils {
 
-    private static Logger log = Logger.getLogger(Word2VecUtil.class);
+    private static Logger log = Logger.getLogger(Word2VecUtils.class);
 
     public static void main(String[] args) throws FileNotFoundException {
         log.info("Load data....");

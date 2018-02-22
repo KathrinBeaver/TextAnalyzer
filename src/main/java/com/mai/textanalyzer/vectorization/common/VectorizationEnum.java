@@ -20,4 +20,12 @@ public enum VectorizationEnum {
         this.rusName = rusName;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public String getRusName() {
+        return rusName;
+    }
+
 }

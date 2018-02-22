@@ -5,7 +5,6 @@
  */
 package com.mai.textanalyzer.web.vaadin.ui;
 
-import com.mai.textanalyzer.ui.vectorization.VectorizationPanel;
 import com.mai.textanalyzer.web.vaadin.pages.main.MainComponent;
 import com.mai.textanalyzer.web.vaadin.system.SystemUtils;
 import com.vaadin.annotations.Theme;

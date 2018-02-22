@@ -21,13 +21,13 @@ import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFac
  *
  * @author Sergey
  */
-public class Doc2Vec {
+public class Doc2VecUtils {
 
     ParagraphVectors paragraphVectors;
 //    LabelAwareIterator iterator;
 //    TokenizerFactory tokenizerFactory;
 
-    private static final Logger log = Logger.getLogger(Doc2Vec.class);
+    private static final Logger log = Logger.getLogger(Doc2VecUtils.class);
 
     public static void main(String[] args) throws Exception {
 //        try {
@@ -40,10 +40,10 @@ public class Doc2Vec {
     }
 
 //    File file = new File("D:\\testClassDoc");
-    public static ParagraphVectors createModel(File file) {
+    public static ParagraphVectors createModel(File folderWithDataForLearning) {
         // build a iterator for our dataset
         LabelAwareIterator iterator = new FileLabelAwareIterator.Builder()
-                .addSourceFolder(file)
+                .addSourceFolder(folderWithDataForLearning)
                 .build();
 
         TokenizerFactory tokenizerFactory = new DefaultTokenizerFactory();
@@ -60,7 +60,7 @@ public class Doc2Vec {
                 .learningRate(0.025)
                 .minLearningRate(0.001)
                 .batchSize(1000)
-                .epochs(5)
+                .epochs(20)
                 .iterate(iterator)
                 .trainWordVectors(true)
                 .tokenizerFactory(tokenizerFactory)

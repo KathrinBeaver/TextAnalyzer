@@ -5,7 +5,7 @@
  */
 package com.mai.textanalyzer.ui.file_upload;
 
-import com.mai.textanalyzer.indexing.doc2vec.Doc2Vec;
+import com.mai.textanalyzer.indexing.doc2vec.Doc2VecUtils;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.Receiver;
