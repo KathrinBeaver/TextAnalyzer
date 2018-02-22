@@ -5,8 +5,6 @@
  */
 package com.mai.textanalyzer.ui.file_upload;
 
-import com.mai.textanalyzer.indexing.doc2vec.Doc2Vec;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.SucceededListener;
@@ -48,6 +46,7 @@ public class DocUploader implements Receiver, SucceededListener {
     @Override
     public void uploadSucceeded(Upload.SucceededEvent event) {
         LOG.info(outputBuffer.toString());
+
     }
 
     public String getMimeType() {
