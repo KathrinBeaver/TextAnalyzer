@@ -5,15 +5,16 @@
  */
 package com.mai.textanalyzer.ui.file_upload;
 
-import com.mai.textanalyzer.indexing.doc2vec.Doc2VecUtils;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.SucceededListener;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import org.apache.log4j.Logger;
 
 /**
@@ -22,6 +23,7 @@ import org.apache.log4j.Logger;
  */
 public class DocUploader implements Receiver, SucceededListener {
 
+    private static final long serialVersionUID = -127675472190466761L;
     private static final Logger LOG = Logger.getLogger(DocUploader.class);
 
     private ByteArrayOutputStream outputBuffer = null;
@@ -30,11 +32,8 @@ public class DocUploader implements Receiver, SucceededListener {
 
     private String fileName;
 
-    public InputStream getStream() {
-        if (outputBuffer == null) {
-            return null;
-        }
-        return new ByteArrayInputStream(outputBuffer.toByteArray());
+    public String getDoc() throws UnsupportedEncodingException {
+        return new String(outputBuffer.toByteArray(), "UTF-8");
     }
 
     @Override
@@ -47,7 +46,7 @@ public class DocUploader implements Receiver, SucceededListener {
 
     @Override
     public void uploadSucceeded(Upload.SucceededEvent event) {
-        LOG.info(outputBuffer.toString());
+
     }
 
     public String getMimeType() {

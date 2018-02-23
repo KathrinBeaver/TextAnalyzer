@@ -19,8 +19,8 @@ public class TestDoc2VecUtils {
 
     public static void main(String[] args) {
         File file = new File("G:\\DocForTest\\DataForLearning");
-        ParagraphVectors pv = Doc2VecUtils.createModel(file);
-        Doc2VecUtils.saveModel(pv, saveModel);
+//        ParagraphVectors pv = Doc2VecUtils.createModel(file);
+//        Doc2VecUtils.saveModel(pv, saveModel);
 
         ParagraphVectors loadPv = Doc2VecUtils.loadModel(saveModel);
         System.out.println("loadPv != null " + loadPv != null);

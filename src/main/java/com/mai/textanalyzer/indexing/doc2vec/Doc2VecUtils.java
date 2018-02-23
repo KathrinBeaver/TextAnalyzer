@@ -5,17 +5,27 @@
  */
 package com.mai.textanalyzer.indexing.doc2vec;
 
+import com.mai.textanalyzer.indexing.doc2vec.tools.LabelSeeker;
+import com.mai.textanalyzer.indexing.doc2vec.tools.LabelsEnum;
+import com.mai.textanalyzer.indexing.doc2vec.tools.MeansBuilder;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import org.deeplearning4j.models.paragraphvectors.ParagraphVectors;
 import org.deeplearning4j.text.documentiterator.LabelAwareIterator;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
 import org.apache.log4j.Logger;
+import org.deeplearning4j.models.embeddings.inmemory.InMemoryLookupTable;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
+import org.deeplearning4j.models.word2vec.VocabWord;
 import org.deeplearning4j.plot.BarnesHutTsne;
 import org.deeplearning4j.text.documentiterator.FileLabelAwareIterator;
 import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
+import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.primitives.Pair;
 
 /**
  *
@@ -23,10 +33,8 @@ import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFac
  */
 public class Doc2VecUtils {
 
-    ParagraphVectors paragraphVectors;
 //    LabelAwareIterator iterator;
 //    TokenizerFactory tokenizerFactory;
-
     private static final Logger log = Logger.getLogger(Doc2VecUtils.class);
 
     public static void main(String[] args) throws Exception {
@@ -86,6 +94,17 @@ public class Doc2VecUtils {
         return pv;
     }
 
+    public static ParagraphVectors loadModel(InputStream inputStream) {
+        ParagraphVectors pv = null;
+        try {
+            pv = WordVectorSerializer.readParagraphVectors(inputStream);
+        } catch (IOException e) {
+            log.info(e);
+            return null;
+        }
+        return pv;
+    }
+
     public static void visualizingModel(ParagraphVectors pv, File outPutFile) {
         BarnesHutTsne tsne = new BarnesHutTsne.Builder()
                 .setMaxIter(1000)
@@ -98,6 +117,25 @@ public class Doc2VecUtils {
                 //                .usePca(false)
                 .build();
         pv.getLookupTable().plotVocab(pv.getLookupTable().layerSize(), outPutFile);
+    }
+
+    public static List<Pair<String, Double>> getTopics(ParagraphVectors pv, String document) {
+        TokenizerFactory tokenizerFactory = new DefaultTokenizerFactory();
+        tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
+
+        MeansBuilder meansBuilder = new MeansBuilder(
+                (InMemoryLookupTable<VocabWord>) pv.getLookupTable(),
+                tokenizerFactory);
+
+        List<String> list = new ArrayList();
+//        list.add("Астрономия");
+//        list.add("Право");
+//
+//        LabelSeeker seeker = new LabelSeeker(list, (InMemoryLookupTable<VocabWord>) pv.getLookupTable());
+        LabelSeeker seeker = new LabelSeeker(LabelsEnum.getListLabels(), (InMemoryLookupTable<VocabWord>) pv.getLookupTable());
+        INDArray documentAsCentroid = meansBuilder.documentAsVector(document);
+        List<Pair<String, Double>> scores = seeker.getScores(documentAsCentroid);
+        return scores;
     }
 
 //    void checkUnlabeledData() throws FileNotFoundException {
@@ -142,5 +180,4 @@ public class Doc2VecUtils {
 //        }
 //
 //    }
-
 }

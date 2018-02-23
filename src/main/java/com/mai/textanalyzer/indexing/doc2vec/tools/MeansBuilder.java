@@ -12,12 +12,13 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Simple utility class that builds centroid vector for LabelledDocument
- * based on previously trained ParagraphVectors model
+ * Simple utility class that builds centroid vector for LabelledDocument based
+ * on previously trained ParagraphVectors model
  *
  * @author raver119@gmail.com
  */
 public class MeansBuilder {
+
     private VocabCache<VocabWord> vocabCache;
     private InMemoryLookupTable<VocabWord> lookupTable;
     private TokenizerFactory tokenizerFactory;
@@ -34,18 +35,21 @@ public class MeansBuilder {
      * @param document
      * @return
      */
-    public INDArray documentAsVector(LabelledDocument document) {
-        List<String> documentAsTokens = tokenizerFactory.create(document.getContent()).getTokens();
+    public INDArray documentAsVector(String document) {
+        List<String> documentAsTokens = tokenizerFactory.create(document).getTokens();
         AtomicInteger cnt = new AtomicInteger(0);
-        for (String word: documentAsTokens) {
-            if (vocabCache.containsWord(word)) cnt.incrementAndGet();
+        for (String word : documentAsTokens) {
+            if (vocabCache.containsWord(word)) {
+                cnt.incrementAndGet();
+            }
         }
         INDArray allWords = Nd4j.create(cnt.get(), lookupTable.layerSize());
 
         cnt.set(0);
-        for (String word: documentAsTokens) {
-            if (vocabCache.containsWord(word))
+        for (String word : documentAsTokens) {
+            if (vocabCache.containsWord(word)) {
                 allWords.putRow(cnt.getAndIncrement(), lookupTable.vector(word));
+            }
         }
 
         INDArray mean = allWords.mean(0);

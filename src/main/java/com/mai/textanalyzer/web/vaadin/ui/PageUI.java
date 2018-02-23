@@ -5,7 +5,8 @@
  */
 package com.mai.textanalyzer.web.vaadin.ui;
 
-import com.mai.textanalyzer.web.vaadin.pages.main.MainComponent;
+import com.mai.textanalyzer.ui.vectorization.VectorizationPanel;
+import com.mai.textanalyzer.web.vaadin.pages.main.MainViewComponent;
 import com.mai.textanalyzer.web.vaadin.system.SystemUtils;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
@@ -26,7 +27,7 @@ import com.vaadin.ui.Window;
 public class PageUI extends AbstractAnalyzerUI {
 
     public static final String URL_PREFIX = "PageUI";
-    public static final String DEFAULT_VIEW = MainComponent.VIEW_NAME;
+    public static final String DEFAULT_VIEW = MainViewComponent.VIEW_NAME;
 
     private Navigator navigator;
 
@@ -38,8 +39,8 @@ public class PageUI extends AbstractAnalyzerUI {
     protected void init(VaadinRequest request) {
         super.init(request);
         initComponents();
-        String redirectPrefix = SystemUtils.getContextPath() + "/" + URL_PREFIX + "#!";
-        UI.getCurrent().getPage().setLocation(redirectPrefix + PageUI.DEFAULT_VIEW);
+//        String redirectPrefix = SystemUtils.getContextPath() + "/" + URL_PREFIX + "#!";
+//        UI.getCurrent().getPage().setLocation(redirectPrefix + PageUI.DEFAULT_VIEW);vc x
     }
 
     private void initComponents() {
@@ -50,7 +51,7 @@ public class PageUI extends AbstractAnalyzerUI {
 //        if (user == null) {
 //            return;
 //        }
-        navigator.addView(MainComponent.VIEW_NAME, new MainComponent());
+        navigator.addView(MainViewComponent.VIEW_NAME, new MainViewComponent());
         navigator.addViewChangeListener(new ViewChangeListener() {
             @Override
             public boolean beforeViewChange(ViewChangeListener.ViewChangeEvent event) {

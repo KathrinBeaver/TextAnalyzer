@@ -20,18 +20,11 @@
             <artifactId>deeplearning4j-nlp</artifactId>
             <version>0.9.1</version>
             <type>jar</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bytedeco.javacpp-presets</groupId>
-                    <artifactId>opencv</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.deeplearning4j</groupId>
             <artifactId>deeplearning4j-nn</artifactId>
             <version>0.9.1</version>
-            <scope>test</scope>
             <type>jar</type>
         </dependency>
         
@@ -76,7 +69,7 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-themes</artifactId>
-            <version>7.7.12</version>
+            <version>7.7.13</version>
         </dependency>
        
         <dependency>
