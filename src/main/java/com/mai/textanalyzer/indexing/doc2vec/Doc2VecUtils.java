@@ -6,11 +6,11 @@
 package com.mai.textanalyzer.indexing.doc2vec;
 
 import com.mai.textanalyzer.indexing.doc2vec.tools.LabelSeeker;
-import com.mai.textanalyzer.indexing.doc2vec.tools.LabelsEnum;
 import com.mai.textanalyzer.indexing.doc2vec.tools.MeansBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import org.deeplearning4j.models.paragraphvectors.ParagraphVectors;
@@ -95,7 +95,7 @@ public class Doc2VecUtils {
     }
 
     public static ParagraphVectors loadModel(InputStream inputStream) {
-        ParagraphVectors pv = null;
+        ParagraphVectors pv;
         try {
             pv = WordVectorSerializer.readParagraphVectors(inputStream);
         } catch (IOException e) {
@@ -127,12 +127,21 @@ public class Doc2VecUtils {
                 (InMemoryLookupTable<VocabWord>) pv.getLookupTable(),
                 tokenizerFactory);
 
-        List<String> list = new ArrayList();
-//        list.add("Астрономия");
-//        list.add("Право");
-//
-//        LabelSeeker seeker = new LabelSeeker(list, (InMemoryLookupTable<VocabWord>) pv.getLookupTable());
-        LabelSeeker seeker = new LabelSeeker(LabelsEnum.getListLabels(), (InMemoryLookupTable<VocabWord>) pv.getLookupTable());
+        Class c = pv.getClass();
+        Field field;
+        List<String> labelsList = new ArrayList<>();
+        try {
+            field = c.getDeclaredField("labelsList");
+            field.setAccessible(true);
+            List<VocabWord> templist = (List<VocabWord>) field.get(pv);
+            templist.stream().forEach((vw) -> {
+                labelsList.add(vw.getLabel());
+            });
+        } catch (NoSuchFieldException | SecurityException | IllegalAccessException ex) {
+            throw new RuntimeException(ex);
+        }
+        LabelSeeker seeker = new LabelSeeker(labelsList, (InMemoryLookupTable<VocabWord>) pv.getLookupTable());
+//        LabelSeeker seeker = new LabelSeeker(LabelsEnum.getListLabels(), (InMemoryLookupTable<VocabWord>) pv.getLookupTable());
         INDArray documentAsCentroid = meansBuilder.documentAsVector(document);
         List<Pair<String, Double>> scores = seeker.getScores(documentAsCentroid);
         return scores;

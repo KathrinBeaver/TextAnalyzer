@@ -12,12 +12,15 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.Upload;
+import com.vaadin.ui.VerticalLayout;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import org.deeplearning4j.models.paragraphvectors.ParagraphVectors;
+import org.nd4j.linalg.primitives.Pair;
 
 /**
  *
@@ -25,45 +28,45 @@ import org.deeplearning4j.models.paragraphvectors.ParagraphVectors;
  */
 public class ClassificationComponent extends CustomComponent {
 
+    private final File saveModelFile = new File("G:/DocForTest/SaveModel/1/Doc2Vec");
+
     private final VectorizationPanel panel = new VectorizationPanel();
     private ParagraphVectors pv;
     private final DocUploader receiver = new DocUploader();
     private final Upload upload = new Upload("Загрузите текст здесь", receiver);
     private final Button startClassificationButton = new Button("Начать классификацию");
     private static final Logger LOG = Logger.getLogger(ClassificationComponent.class);
+    private final Table topicTable = new Table("Совпадения с темами:");
 
-    public ClassificationComponent() {//https://dev.vaadin.com/svn/doc/book-examples/branches/vaadin-7/src/com/vaadin/book/examples/component/UploadExample.java
+    public ClassificationComponent() {
         initComponents();
-
+        initListiners(upload);
     }
 
     private void initComponents() {
-        final HorizontalLayout layout = new HorizontalLayout();
-        layout.setSpacing(true);
-        initListiners(upload);
+        final HorizontalLayout hLayout = new HorizontalLayout();
+        hLayout.setSpacing(true);
+
         upload.setButtonCaption("Начать загрузку");
         upload.addSucceededListener(receiver);
         startClassificationButton.setEnabled(true);
-
-        layout.addComponents(panel);
-        layout.addComponents(upload);
-        layout.addComponents(startClassificationButton);
+        hLayout.addComponents(panel);
+        hLayout.addComponents(upload);
+        hLayout.addComponents(startClassificationButton);
         startClassificationButton.setEnabled(false);
-        layout.setMargin(true);
-        layout.setSpacing(true);
-        setCompositionRoot(layout);
-        LOG.info(new File("srs/main").isDirectory());
-        LOG.info(new File("/srs/main").isDirectory());
-        LOG.info(new File("main\\resours").isDirectory());
-        LOG.info(new File("\\main\\resours").isDirectory());
-        LOG.info(new File("resours\\save_model").isDirectory());
-        LOG.info(new File("\\resours\\save_model").isDirectory());
-        LOG.info(getClass().getResource("save_model/doc2vec/Doc2Vec") != null);
-        LOG.info(getClass().getResourceAsStream("/save_model/doc2vec/Doc2Vec") != null);
+        hLayout.setMargin(true);
+        hLayout.setSpacing(true);
 
-        LOG.info(new File("G:\\DocForTest\\SaveModel\\Doc2Vec").exists());
+        topicTable.addContainerProperty("Имя категории", String.class, null);
+        topicTable.addContainerProperty("Близость к категории [-1,1]", Double.class, null);
 
-        pv = Doc2VecUtils.loadModel(getClass().getResourceAsStream("/save_model/doc2vec/Doc2Vec"));
+        VerticalLayout vLayout = new VerticalLayout();
+        vLayout.addComponent(hLayout);
+        vLayout.addComponent(topicTable);
+
+        setCompositionRoot(vLayout);
+
+        pv = Doc2VecUtils.loadModel(saveModelFile);
     }
 
     private void initListiners(Upload upload) {
@@ -89,7 +92,12 @@ public class ClassificationComponent extends CustomComponent {
             } catch (UnsupportedEncodingException ex) {
                 java.util.logging.Logger.getLogger(ClassificationComponent.class.getName()).log(Level.SEVERE, null, ex);
             }
-            LOG.info(Doc2VecUtils.getTopics(pv, document));
+            int count = 1;
+            for (Pair<String, Double> pairs : Doc2VecUtils.getTopics(pv, document)) {
+                LOG.info(topicTable.addItem(new Object[]{pairs.getFirst(), pairs.getSecond()}, count));
+                count++;
+            }
+            topicTable.setPageLength(topicTable.size());
         });
 
     }
