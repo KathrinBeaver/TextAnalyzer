@@ -37,16 +37,6 @@ public class Doc2VecUtils {
 //    TokenizerFactory tokenizerFactory;
     private static final Logger log = Logger.getLogger(Doc2VecUtils.class);
 
-    public static void main(String[] args) throws Exception {
-//        try {
-//            Loader.load(TestDoc2Vec.class);
-//        } catch (UnsatisfiedLinkError e) {
-//            String path = Loader.cacheResource(TestDoc2Vec.class, "C:\\Users\\Sergey\\.javacpp\\cache\\cuda-8.0-6.0-1.3-windows-x86_64.jar\\org\\bytedeco\\javacpp\\windows-x86_64\\jnicuda.dll").getPath();
-//            new ProcessBuilder("C:\\Users\\Sergey\\Desktop\\DependsWalcker\\depends.exe", path).start().waitFor();
-//        }
-
-    }
-
 //    File file = new File("D:\\testClassDoc");
     public static ParagraphVectors createModel(File folderWithDataForLearning) {
         // build a iterator for our dataset
@@ -141,52 +131,8 @@ public class Doc2VecUtils {
             throw new RuntimeException(ex);
         }
         LabelSeeker seeker = new LabelSeeker(labelsList, (InMemoryLookupTable<VocabWord>) pv.getLookupTable());
-//        LabelSeeker seeker = new LabelSeeker(LabelsEnum.getListLabels(), (InMemoryLookupTable<VocabWord>) pv.getLookupTable());
         INDArray documentAsCentroid = meansBuilder.documentAsVector(document);
         List<Pair<String, Double>> scores = seeker.getScores(documentAsCentroid);
         return scores;
     }
-
-//    void checkUnlabeledData() throws FileNotFoundException {
-//        paragraphVectors.inferVector(text);
-//
-//        /*
-//      At this point we assume that we have model built and we can check
-//      which categories our unlabeled document falls into.
-//      So we'll start loading our unlabeled documents and checking them
-//         */
-//        File file = new File("D:\\testUnClassDoc");
-//        FileLabelAwareIterator unClassifiedIterator = new FileLabelAwareIterator.Builder()
-//                .addSourceFolder(file)
-//                .build();
-//
-//        /*
-//      Now we'll iterate over unlabeled data, and check which label it could be assigned to
-//      Please note: for many domains it's normal to have 1 document fall into few labels at once,
-//      with different "weight" for each.
-//         */
-//        MeansBuilder meansBuilder = new MeansBuilder(
-//                (InMemoryLookupTable<VocabWord>) paragraphVectors.getLookupTable(),
-//                tokenizerFactory);
-//        LabelSeeker seeker = new LabelSeeker(iterator.getLabelsSource().getLabels(),
-//                (InMemoryLookupTable<VocabWord>) paragraphVectors.getLookupTable());
-//
-//        while (unClassifiedIterator.hasNextDocument()) {
-//            LabelledDocument document = unClassifiedIterator.nextDocument();
-//            INDArray documentAsCentroid = meansBuilder.documentAsVector(document);
-//            List<Pair<String, Double>> scores = seeker.getScores(documentAsCentroid);
-//
-//            /*
-//          please note, document.getLabel() is used just to show which document we're looking at now,
-//          as a substitute for printing out the whole document name.
-//          So, labels on these two documents are used like titles,
-//          just to visualize our classification done properly
-//             */
-//            log.info("Document '" + document.getLabels() + "' falls into the following categories: ");
-//            for (Pair<String, Double> score : scores) {
-//                log.info("        " + score.getFirst() + ": " + score.getSecond());
-//            }
-//        }
-//
-//    }
 }

@@ -56,6 +56,12 @@
             <type>jar</type>
         </dependency>
         <dependency>
+            <groupId>org.datavec</groupId>
+            <artifactId>datavec-data-nlp</artifactId>
+            <version>0.9.1</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
             <version>8.0</version>

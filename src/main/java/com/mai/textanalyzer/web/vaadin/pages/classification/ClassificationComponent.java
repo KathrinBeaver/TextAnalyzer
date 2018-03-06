@@ -94,7 +94,7 @@ public class ClassificationComponent extends CustomComponent {
             }
             int count = 1;
             for (Pair<String, Double> pairs : Doc2VecUtils.getTopics(pv, document)) {
-                LOG.info(topicTable.addItem(new Object[]{pairs.getFirst(), pairs.getSecond()}, count));
+                topicTable.addItem(new Object[]{pairs.getFirst(), pairs.getSecond()}, count);
                 count++;
             }
             topicTable.setPageLength(topicTable.size());
