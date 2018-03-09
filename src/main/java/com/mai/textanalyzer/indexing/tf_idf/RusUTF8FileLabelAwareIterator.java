@@ -8,13 +8,11 @@ package com.mai.textanalyzer.indexing.tf_idf;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.NonNull;
-import org.deeplearning4j.text.documentiterator.FileLabelAwareIterator;
 import org.deeplearning4j.text.documentiterator.LabelAwareIterator;
 import org.deeplearning4j.text.documentiterator.LabelledDocument;
 import org.deeplearning4j.text.documentiterator.LabelsSource;
@@ -106,6 +104,10 @@ public class RusUTF8FileLabelAwareIterator implements LabelAwareIterator {
     @Override
     public LabelsSource getLabelsSource() {
         return labelsSource;
+    }
+
+    public int getSize() {
+        return files.size();
     }
 
     public static class Builder {
