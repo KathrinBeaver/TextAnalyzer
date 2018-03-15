@@ -30,13 +30,13 @@ public class TfIIdfUtils {
 
     private final static Logger log = Logger.getLogger(TfIIdfUtils.class.getName());
 
-    private final static File saveTfIdf = new File("D:\\TextClassification\\forTest\\saveModelTest\\tfidf");
+    private final static File saveTfIdf = new File("G:\\DocForTest\\SaveModel");
 
     private final static RusUTF8FileLabelAwareIterator iterator;
     private final static TokenizerFactory tokenizerFactory;
 
     static {
-        File folderWithDataForLearning = new File("D:\\TextClassification\\forTest\\testDoc4TfIdf");
+        File folderWithDataForLearning = new File("G:\\DocForTest\\DataForLearning");
 
         iterator = new RusUTF8FileLabelAwareIterator.Builder()
                 .addSourceFolder(folderWithDataForLearning)

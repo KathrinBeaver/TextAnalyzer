@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package testDoc2vec;
+package tests;
 
 import com.mai.textanalyzer.indexing.doc2vec.Doc2VecUtils;
 import java.io.File;

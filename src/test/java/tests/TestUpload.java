@@ -1,4 +1,4 @@
-package testDoc2vec;
+package tests;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
