@@ -23,7 +23,7 @@ public class TestClassifier {
      * Main method.
      *
      */
-    @Test
+//    @Test
     public void test() throws Exception {
         System.out.println("Start vectorizer create");
         TfidfVectorizer vectorizer = TfIIdfUtils.createModel();

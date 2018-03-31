@@ -20,7 +20,7 @@ public class TestTfIIdfUtils {
 
     String text = "скучный дождь";
 
-    @Test
+//    @Test
     public void testMethod() throws IOException {
 
         TfidfVectorizer tfidfVectorizer = TfIIdfUtils.createModel();

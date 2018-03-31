@@ -5,7 +5,6 @@
  */
 package com.mai.textanalyzer.web.vaadin.ui;
 
-import com.mai.textanalyzer.ui.vectorization.VectorizationPanel;
 import com.mai.textanalyzer.web.vaadin.pages.main.MainViewComponent;
 import com.mai.textanalyzer.web.vaadin.system.SystemUtils;
 import com.vaadin.annotations.Theme;
@@ -15,7 +14,6 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 /**
@@ -40,7 +38,7 @@ public class PageUI extends AbstractAnalyzerUI {
         super.init(request);
         initComponents();
 //        String redirectPrefix = SystemUtils.getContextPath() + "/" + URL_PREFIX + "#!";
-//        UI.getCurrent().getPage().setLocation(redirectPrefix + PageUI.DEFAULT_VIEW);vc x
+//        UI.getCurrent().getPage().setLocation(redirectPrefix + PageUI.DEFAULT_VIEW);
     }
 
     private void initComponents() {

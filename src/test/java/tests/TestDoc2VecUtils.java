@@ -15,16 +15,15 @@ import org.deeplearning4j.models.paragraphvectors.ParagraphVectors;
  */
 public class TestDoc2VecUtils {
 
-    private static final File saveModel = new File("G:\\DocForTest\\SaveModel\\Doc2Vec");
+    private static final File saveModel = new File("E:\\DocForTest\\SaveModel\\3");
 
     public static void main(String[] args) {
-        File file = new File("G:\\DocForTest\\DataForLearning");
-//        ParagraphVectors pv = Doc2VecUtils.createModel(file);
-//        Doc2VecUtils.saveModel(pv, saveModel);
+        File file = new File("E:\\DocForTest\\DataForLearning");
+        ParagraphVectors pv = Doc2VecUtils.createModel(file);
+        Doc2VecUtils.saveModel(pv, saveModel);
 
-        ParagraphVectors loadPv = Doc2VecUtils.loadModel(saveModel);
-        System.out.println("loadPv != null " + loadPv != null);
-
+//        ParagraphVectors loadPv = Doc2VecUtils.loadModel(saveModel);
+//        System.out.println("loadPv != null " + loadPv != null);
     }
 
 }
