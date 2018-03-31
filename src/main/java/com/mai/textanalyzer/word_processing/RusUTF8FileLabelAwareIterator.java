@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mai.textanalyzer.indexing.tf_idf;
+package com.mai.textanalyzer.word_processing;
 
 import java.io.BufferedReader;
 import java.io.File;

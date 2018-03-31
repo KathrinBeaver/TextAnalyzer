@@ -5,13 +5,12 @@
  */
 package tests;
 
-import com.mai.textanalyzer.indexing.tf_idf.RusUTF8FileLabelAwareIterator;
+import com.mai.textanalyzer.word_processing.RusUTF8FileLabelAwareIterator;
 import com.mai.textanalyzer.indexing.tf_idf.TfIIdfUtils;
 import com.mai.textanalyzer.indexing.tf_idf.TfIdfTextModel;
 import java.io.File;
 import org.deeplearning4j.bagofwords.vectorizer.TfidfVectorizer;
 import org.deeplearning4j.text.documentiterator.LabelledDocument;
-import org.junit.Test;
 
 /**
  *

@@ -7,6 +7,7 @@ package com.mai.textanalyzer.indexing.doc2vec;
 
 import com.mai.textanalyzer.indexing.doc2vec.tools.LabelSeeker;
 import com.mai.textanalyzer.indexing.doc2vec.tools.MeansBuilder;
+import com.mai.textanalyzer.word_processing.MyPreprocessor;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,7 +53,7 @@ public class Doc2VecUtils {
         are stripped off.
         Additionally it forces lower case for all tokens.
          */
-        tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
+        tokenizerFactory.setTokenPreProcessor(new MyPreprocessor());
         // ParagraphVectors training configuration
         ParagraphVectors paragraphVectors = new ParagraphVectors.Builder()
                 .learningRate(0.025)
@@ -111,7 +112,7 @@ public class Doc2VecUtils {
 
     public static List<Pair<String, Double>> getTopics(ParagraphVectors pv, String document) {
         TokenizerFactory tokenizerFactory = new DefaultTokenizerFactory();
-        tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
+        tokenizerFactory.setTokenPreProcessor(new MyPreprocessor());
 
         MeansBuilder meansBuilder = new MeansBuilder(
                 (InMemoryLookupTable<VocabWord>) pv.getLookupTable(),
