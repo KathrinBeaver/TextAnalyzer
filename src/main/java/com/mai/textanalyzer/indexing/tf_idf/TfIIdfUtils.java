@@ -5,7 +5,7 @@
  */
 package com.mai.textanalyzer.indexing.tf_idf;
 
-import com.mai.textanalyzer.word_processing.MyPreprocessor;
+import com.mai.textanalyzer.indexing.common.IndexingUtils;
 import com.mai.textanalyzer.word_processing.RusUTF8FileLabelAwareIterator;
 import java.io.File;
 import java.io.IOException;
@@ -15,8 +15,6 @@ import org.deeplearning4j.bagofwords.vectorizer.TfidfVectorizer;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.word2vec.VocabWord;
 import org.deeplearning4j.models.word2vec.wordstore.VocabCache;
-import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
-import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
 
 /**
  *
@@ -26,37 +24,21 @@ public class TfIIdfUtils {
 
     private final static Logger log = Logger.getLogger(TfIIdfUtils.class.getName());
 
-    private final static File saveTfIdf = new File("G:\\DocForTest\\SaveModel");
-
-    private final static RusUTF8FileLabelAwareIterator iterator;
-    private final static TokenizerFactory tokenizerFactory;
-
-    static {
-        File folderWithDataForLearning = new File("G:\\DocForTest\\DataForLearning");
-
-        iterator = new RusUTF8FileLabelAwareIterator.Builder()
-                .addSourceFolder(folderWithDataForLearning)
-                .build();
-
-        tokenizerFactory = new DefaultTokenizerFactory();
-        tokenizerFactory.setTokenPreProcessor(new MyPreprocessor());
-    }
-
-    public static TfidfVectorizer createModel() {
+    public static TfidfVectorizer createModel(File folderWithDataForLearning) {
         TfidfVectorizer vectorizer = new TfidfVectorizer.Builder()
                 .setMinWordFrequency(0)
                 .setStopWords(new ArrayList<>())
-                .setTokenizerFactory(tokenizerFactory)
-                .setIterator(iterator)
+                .setTokenizerFactory(IndexingUtils.getTokenizerFactory())
+                .setIterator(IndexingUtils.getLabelAwareIterator(folderWithDataForLearning))
                 .allowParallelTokenization(true)
                 .build();
         vectorizer.fit();
         return vectorizer;
     }
 
-    public static boolean saveModel(TfidfVectorizer tfidfVectorizer) {
+    public static boolean saveModel(TfidfVectorizer tfidfVectorizer, File folderForSave) {
         try {
-            WordVectorSerializer.writeVocabCache(tfidfVectorizer.getVocabCache(), saveTfIdf);
+            WordVectorSerializer.writeVocabCache(tfidfVectorizer.getVocabCache(), folderForSave);
         } catch (IOException ex) {
             log.info(ex.toString());
             return false;
@@ -65,23 +47,26 @@ public class TfIIdfUtils {
     }
 
     /**
+     * @param folderWithModel
+     * @param folderWithDataForLearning
      * @return null if an error occured while loading model
      */
-    public static TfidfVectorizer loadModel() {
+    public static TfidfVectorizer loadModel(File folderWithModel, File folderWithDataForLearning) {
         VocabCache<VocabWord> loadCache;
         try {
-            loadCache = WordVectorSerializer.readVocabCache(saveTfIdf);
+            loadCache = WordVectorSerializer.readVocabCache(folderWithModel);
         } catch (IOException ex) {
             log.info(ex.toString());
             return null;
         }
+        RusUTF8FileLabelAwareIterator iterator = IndexingUtils.getLabelAwareIterator(folderWithDataForLearning);
         loadCache.incrementTotalDocCount(iterator.getSize());
 
         return new TfidfVectorizer.Builder()
                 .setMinWordFrequency(0)
                 .setStopWords(new ArrayList<>())
                 .setVocab(loadCache)
-                .setTokenizerFactory(tokenizerFactory)
+                .setTokenizerFactory(IndexingUtils.getTokenizerFactory())
                 .setIterator(iterator)
                 .allowParallelTokenization(true)
                 .build();

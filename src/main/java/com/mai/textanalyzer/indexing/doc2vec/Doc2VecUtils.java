@@ -5,6 +5,7 @@
  */
 package com.mai.textanalyzer.indexing.doc2vec;
 
+import com.mai.textanalyzer.indexing.common.IndexingUtils;
 import com.mai.textanalyzer.indexing.doc2vec.tools.LabelSeeker;
 import com.mai.textanalyzer.indexing.doc2vec.tools.MeansBuilder;
 import com.mai.textanalyzer.word_processing.MyPreprocessor;
@@ -22,8 +23,6 @@ import org.deeplearning4j.models.embeddings.inmemory.InMemoryLookupTable;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.word2vec.VocabWord;
 import org.deeplearning4j.plot.BarnesHutTsne;
-import org.deeplearning4j.text.documentiterator.FileLabelAwareIterator;
-import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.primitives.Pair;
@@ -34,27 +33,13 @@ import org.nd4j.linalg.primitives.Pair;
  */
 public class Doc2VecUtils {
 
-//    LabelAwareIterator iterator;
-//    TokenizerFactory tokenizerFactory;
     private static final Logger log = Logger.getLogger(Doc2VecUtils.class);
 
 //    File file = new File("D:\\testClassDoc");
     public static ParagraphVectors createModel(File folderWithDataForLearning) {
         // build a iterator for our dataset
-        LabelAwareIterator iterator = new FileLabelAwareIterator.Builder()
-                .addSourceFolder(folderWithDataForLearning)
-                .build();
+        LabelAwareIterator iterator = IndexingUtils.getLabelAwareIterator(folderWithDataForLearning);
 
-        TokenizerFactory tokenizerFactory = new DefaultTokenizerFactory();
-        /*
-        CommonPreprocessor will apply the following regex to each token:
-        [\d\.:,"'\(\)\[\]|/?!;]+
-        So, effectively all numbers, punctuation symbols and some special symbols
-        are stripped off.
-        Additionally it forces lower case for all tokens.
-         */
-        tokenizerFactory.setTokenPreProcessor(new MyPreprocessor());
-        // ParagraphVectors training configuration
         ParagraphVectors paragraphVectors = new ParagraphVectors.Builder()
                 .learningRate(0.025)
                 .minLearningRate(0.001)
@@ -62,7 +47,7 @@ public class Doc2VecUtils {
                 .epochs(20)
                 .iterate(iterator)
                 .trainWordVectors(true)
-                .tokenizerFactory(tokenizerFactory)
+                .tokenizerFactory(IndexingUtils.getTokenizerFactory())
                 .build();
 
         // Start model training

@@ -25,10 +25,10 @@ public class TestClassifier {
 //    @Test
     public void test() throws Exception {
         System.out.println("Start vectorizer create");
-        TfidfVectorizer vectorizer = TfIIdfUtils.createModel();
+        File folderWithDataForLearning = new File("G:\\DocForTest\\DataForLearning");
+        TfidfVectorizer vectorizer = TfIIdfUtils.createModel(folderWithDataForLearning);
         System.out.println("End vectorizer create");
 
-        File folderWithDataForLearning = new File("G:\\DocForTest\\DataForLearning");
         RusUTF8FileLabelAwareIterator tearchingIterator = new RusUTF8FileLabelAwareIterator.Builder()
                 .addSourceFolder(folderWithDataForLearning)
                 .build();
