@@ -3,33 +3,36 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package tests;
+package com.mai.textanalyzer.classifier.weka_classifier;
 
 import com.mai.textanalyzer.indexing.common.BasicTextModel;
+import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.nd4j.linalg.api.iter.NdIndexIterator;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import weka.core.*;
 import weka.classifiers.*;
-import weka.classifiers.bayes.NaiveBayes;
+
 /**
  *
  * @author Sergey
  */
-public class TestWekaClassifier {
+public class WekaClassifier implements Serializable {
 
     /* The training data. */
-    private Instances m_Data = null;
+    private Instances data = null;
     /* The classifier. */
-    private final Classifier m_Classifier = new NaiveBayes();
+    private final Classifier classifier;
 
-    public TestWekaClassifier(BasicTextModel modelExample, List<String> topics) {
+    public WekaClassifier(AbstractClassifier classifier, int iNDArrayLength, List<String> topics) {
+        this.classifier = classifier;
 
-        String nameOfDataset = "Classification";
+        String nameOfDataset = "classification";
         // Create numeric attributes.
-        INDArray firstVectors = modelExample.getiNDArray();
-        FastVector attributes = new FastVector(firstVectors.length() + 1);
-        for (int i = 0; i < firstVectors.length(); i++) {
+        FastVector attributes = new FastVector(iNDArrayLength + 1);
+        for (int i = 0; i < iNDArrayLength; i++) {
             attributes.addElement(new Attribute(String.valueOf(i)));
         }
 
@@ -41,8 +44,8 @@ public class TestWekaClassifier {
 
         attributes.addElement(new Attribute("topic", topicValues));
         // Create dataset with initial capacity of 100, and set index of class.
-        m_Data = new Instances(nameOfDataset, attributes, 100);
-        m_Data.setClassIndex(m_Data.numAttributes() - 1);
+        data = new Instances(nameOfDataset, attributes, 100);
+        data.setClassIndex(data.numAttributes() - 1);
 
     }
 
@@ -50,14 +53,17 @@ public class TestWekaClassifier {
      * Updates model using the given training message.
      *
      * @param textModel
-     * @throws java.lang.Exception
      */
-    public void updateModel(BasicTextModel textModel) throws Exception {
+    public void updateModel(BasicTextModel textModel) {
         // Convert message string into instance.
         Instance instance = makeInstance(textModel);
-        m_Data.add(instance);
-        Instances instances = new Instances(m_Data);
-        m_Classifier.buildClassifier(instances);
+        data.add(instance);
+        Instances instances = new Instances(data);
+        try {
+            classifier.buildClassifier(instances);
+        } catch (Exception ex) {
+            Logger.getLogger(WekaClassifier.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -84,7 +90,7 @@ public class TestWekaClassifier {
             counter++;
         }
         // Give instance access to attribute information from the dataset.
-        instance.setDataset(m_Data);
+        instance.setDataset(data);
         return instance;
     }
 
@@ -95,19 +101,25 @@ public class TestWekaClassifier {
      * @return
      * @throws java.lang.Exception
      */
-    public String classifyMessage(INDArray matrixTextModel) throws Exception {
-        // Check if classifier has been built.
-        if (m_Data.numInstances() == 0) {
-            throw new Exception("No classifier available.");
+    public String classifyMessage(INDArray matrixTextModel) {
+        try {
+            // Check if classifier has been built.
+            if (data.numInstances() == 0) {
+                return null;
+//            throw new Exception("No classifier available.");
+            }
+            // Convert message string into instance.
+            Instance instance = makeInstance(matrixTextModel);
+            // Get index of predicted class value.
+            double predicted = classifier.classifyInstance(instance);
+            // Classify instance.
+            String topic = data.classAttribute().value((int) predicted);
+            System.out.println("Message classified as : " + topic);
+            return topic;
+        } catch (Exception ex) {
+            Logger.getLogger(WekaClassifier.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        // Convert message string into instance.
-        Instance instance = makeInstance(matrixTextModel);
-        // Get index of predicted class value.
-        double predicted = m_Classifier.classifyInstance(instance);
-        // Classify instance.
-        String topic = m_Data.classAttribute().value((int) predicted);
-        System.out.println("Message classified as : " + topic);
-        return topic;
     }
 
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mai.textanalyzer.indexing.tf_idf;
+package com.mai.textanalyzer.indexing.common;
 
 import org.nd4j.linalg.api.ndarray.INDArray;
 
@@ -11,12 +11,12 @@ import org.nd4j.linalg.api.ndarray.INDArray;
  *
  * @author Sergey
  */
-public class TfIdfTextModel {
+public class BasicTextModel {
 
     private final String topic;
     private final INDArray iNDArray;
 
-    public TfIdfTextModel(String topic, INDArray iNDArray) {
+    public BasicTextModel(String topic, INDArray iNDArray) {
         this.topic = topic;
         this.iNDArray = iNDArray;
     }

@@ -7,10 +7,15 @@ package tests;
 
 import com.mai.textanalyzer.word_processing.RusUTF8FileLabelAwareIterator;
 import com.mai.textanalyzer.indexing.tf_idf.TfIIdfUtils;
-import com.mai.textanalyzer.indexing.tf_idf.TfIdfTextModel;
+import com.mai.textanalyzer.indexing.common.BasicTextModel;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
 import org.deeplearning4j.bagofwords.vectorizer.TfidfVectorizer;
 import org.deeplearning4j.text.documentiterator.LabelledDocument;
+import weka.core.Utils;
 
 /**
  *
@@ -24,51 +29,51 @@ public class TestClassifier {
      */
 //    @Test
     public void test() throws Exception {
-        System.out.println("Start vectorizer create");
-        File folderWithDataForLearning = new File("G:\\DocForTest\\DataForLearning");
-        TfidfVectorizer vectorizer = TfIIdfUtils.createModel(folderWithDataForLearning);
-        System.out.println("End vectorizer create");
-
-        RusUTF8FileLabelAwareIterator tearchingIterator = new RusUTF8FileLabelAwareIterator.Builder()
-                .addSourceFolder(folderWithDataForLearning)
-                .build();
-
-        LabelledDocument first = tearchingIterator.next();
-        System.out.println("Start TfIdfTextModel create");
-        TfIdfTextModel modelExample = new TfIdfTextModel(first.getLabel(), vectorizer.transform(first.getContent()));
-        System.out.println("End TfIdfTextModel create");
-
-        System.out.println("Start classifier create");
-        TestWekaClassifier classifier = new TestWekaClassifier(modelExample, tearchingIterator.getLabelsSource().getLabels());
-        System.out.println("End classifier create");
-        System.out.println("Start classifier updateModel");
-        int count = 0;
-        int size = tearchingIterator.getSize();
-        while (tearchingIterator.hasNext()) {
-            LabelledDocument next = tearchingIterator.next();
-            TfIdfTextModel model = new TfIdfTextModel(next.getLabel(), vectorizer.transform(next.getContent()));
-            classifier.updateModel(model);
-            count++;
-            System.out.println(count + "/" + size);
-        }
-        System.out.println("End classifier updateModel");
-
-        File folderWithDataForTest = new File("G:\\DocForTest\\DataForTestModel");
-        RusUTF8FileLabelAwareIterator testingIterator = new RusUTF8FileLabelAwareIterator.Builder()
-                .addSourceFolder(folderWithDataForTest)
-                .build();
-
-        int guessCount = 0;
-        while (testingIterator.hasNextDocument()) {
-            LabelledDocument next = testingIterator.next();
-            String topic = classifier.classifyMessage(vectorizer.transform(next.getContent()));
-            System.out.println("RealTopic: " + topic + " ClassTopic: " + next.getLabel());///!!!!!!!!!!!!!!!!!!!!!!!!!!
-            if (topic.equals(next.getLabel())) {
-                guessCount++;
-            }
-        }
-        System.out.println("AllSizeDoc: " + testingIterator.getSize() + " GuessTopic: " + guessCount);
-
+//        System.out.println("Start vectorizer create");
+//        File folderWithDataForLearning = new File("G:\\DocForTest\\DataForLearning");
+//        TfidfVectorizer vectorizer = TfIIdfUtils.createModel(folderWithDataForLearning);
+//        System.out.println("End vectorizer create");
+//
+//        RusUTF8FileLabelAwareIterator tearchingIterator = new RusUTF8FileLabelAwareIterator.Builder()
+//                .addSourceFolder(folderWithDataForLearning)
+//                .build();
+//
+//        LabelledDocument first = tearchingIterator.next();
+//        System.out.println("Start TfIdfTextModel create");
+//        BasicTextModel modelExample = new BasicTextModel(first.getLabel(), vectorizer.transform(first.getContent()));
+//        System.out.println("End TfIdfTextModel create");
+//
+//        System.out.println("Start classifier create");
+//        TestWekaClassifier classifier = new TestWekaClassifier(modelExample, tearchingIterator.getLabelsSource().getLabels());
+//        System.out.println("End classifier create");
+//        System.out.println("Start classifier updateModel");
+//        int count = 0;
+//        int size = tearchingIterator.getSize();
+//        while (tearchingIterator.hasNext()) {
+//            LabelledDocument next = tearchingIterator.next();
+//            BasicTextModel model = new BasicTextModel(next.getLabel(), vectorizer.transform(next.getContent()));
+//            classifier.updateModel(model);
+//            count++;
+//            System.out.println(count + "/" + size);
+//        }
+//        System.out.println("End classifier updateModel");
+//
+//        File folderWithDataForTest = new File("G:\\DocForTest\\DataForTestModel");
+//        RusUTF8FileLabelAwareIterator testingIterator = new RusUTF8FileLabelAwareIterator.Builder()
+//                .addSourceFolder(folderWithDataForTest)
+//                .build();
+//
+//        int guessCount = 0;
+//        while (testingIterator.hasNextDocument()) {
+//            LabelledDocument next = testingIterator.next();
+//            String topic = classifier.classifyMessage(vectorizer.transform(next.getContent()));
+//            System.out.println("RealTopic: " + topic + " ClassTopic: " + next.getLabel());///!!!!!!!!!!!!!!!!!!!!!!!!!!
+//            if (topic.equals(next.getLabel())) {
+//                guessCount++;
+//            }
+//        }
+//        System.out.println("AllSizeDoc: " + testingIterator.getSize() + " GuessTopic: " + guessCount);
+//
 //        TestWekaClassifier messageCl;
 //        byte[] charArray;
 //        try {

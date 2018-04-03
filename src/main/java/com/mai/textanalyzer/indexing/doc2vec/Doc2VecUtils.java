@@ -43,6 +43,7 @@ public class Doc2VecUtils {
         ParagraphVectors paragraphVectors = new ParagraphVectors.Builder()
                 .learningRate(0.025)
                 .minLearningRate(0.001)
+                .layerSize(300)
                 .batchSize(1000)
                 .epochs(20)
                 .iterate(iterator)
@@ -63,6 +64,7 @@ public class Doc2VecUtils {
         ParagraphVectors pv;
         try {
             pv = WordVectorSerializer.readParagraphVectors(file);
+            pv.setTokenizerFactory(IndexingUtils.getTokenizerFactory());
         } catch (IOException e) {
             log.info(e);
             return null;
