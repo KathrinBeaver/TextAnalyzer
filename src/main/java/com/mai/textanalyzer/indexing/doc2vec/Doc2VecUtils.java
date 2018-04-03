@@ -5,6 +5,7 @@
  */
 package com.mai.textanalyzer.indexing.doc2vec;
 
+import static com.mai.textanalyzer.creater.Creater.LAYER_SIZE;
 import com.mai.textanalyzer.indexing.common.IndexingUtils;
 import com.mai.textanalyzer.indexing.doc2vec.tools.LabelSeeker;
 import com.mai.textanalyzer.indexing.doc2vec.tools.MeansBuilder;
@@ -36,14 +37,12 @@ public class Doc2VecUtils {
     private static final Logger log = Logger.getLogger(Doc2VecUtils.class);
 
 //    File file = new File("D:\\testClassDoc");
-    public static ParagraphVectors createModel(File folderWithDataForLearning) {
-        // build a iterator for our dataset
+    public static Doc2Vec createModel(File folderWithDataForLearning) {
         LabelAwareIterator iterator = IndexingUtils.getLabelAwareIterator(folderWithDataForLearning);
-
         ParagraphVectors paragraphVectors = new ParagraphVectors.Builder()
                 .learningRate(0.025)
                 .minLearningRate(0.001)
-                .layerSize(300)
+                .layerSize(LAYER_SIZE)
                 .batchSize(1000)
                 .epochs(20)
                 .iterate(iterator)
@@ -53,14 +52,15 @@ public class Doc2VecUtils {
 
         // Start model training
         paragraphVectors.fit();
-        return paragraphVectors;
+
+        return new Doc2Vec(paragraphVectors);
     }
 
-    public static void saveModel(ParagraphVectors paragraphVectors, File file) {
-        WordVectorSerializer.writeParagraphVectors(paragraphVectors, file);
+    public static void saveModel(Doc2Vec doc2Vec, File file) {
+        WordVectorSerializer.writeParagraphVectors(doc2Vec.getParagraphVectors(), file);
     }
 
-    public static ParagraphVectors loadModel(File file) {
+    public static Doc2Vec loadModel(File file) {
         ParagraphVectors pv;
         try {
             pv = WordVectorSerializer.readParagraphVectors(file);
@@ -69,10 +69,10 @@ public class Doc2VecUtils {
             log.info(e);
             return null;
         }
-        return pv;
+        return new Doc2Vec(pv);
     }
 
-    public static ParagraphVectors loadModel(InputStream inputStream) {
+    public static Doc2Vec loadModel(InputStream inputStream) {
         ParagraphVectors pv;
         try {
             pv = WordVectorSerializer.readParagraphVectors(inputStream);
@@ -80,7 +80,7 @@ public class Doc2VecUtils {
             log.info(e);
             return null;
         }
-        return pv;
+        return new Doc2Vec(pv);
     }
 
     public static void visualizingModel(ParagraphVectors pv, File outPutFile) {
@@ -97,10 +97,11 @@ public class Doc2VecUtils {
         pv.getLookupTable().plotVocab(pv.getLookupTable().layerSize(), outPutFile);
     }
 
-    public static List<Pair<String, Double>> getTopics(ParagraphVectors pv, String document) {
+    public static List<Pair<String, Double>> getTopics(Doc2Vec doc2Vec, String document) {
         TokenizerFactory tokenizerFactory = new DefaultTokenizerFactory();
         tokenizerFactory.setTokenPreProcessor(new MyPreprocessor());
 
+        ParagraphVectors pv = doc2Vec.getParagraphVectors();
         MeansBuilder meansBuilder = new MeansBuilder(
                 (InMemoryLookupTable<VocabWord>) pv.getLookupTable(),
                 tokenizerFactory);

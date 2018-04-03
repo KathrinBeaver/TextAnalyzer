@@ -22,23 +22,25 @@ import org.deeplearning4j.models.word2vec.wordstore.VocabCache;
  */
 public class TfIIdfUtils {
 
+    private static final int MIN_WORD_FREQUENCY = 2;
     private final static Logger log = Logger.getLogger(TfIIdfUtils.class.getName());
 
-    public static TfidfVectorizer createModel(File folderWithDataForLearning) {
+    public static TfIdf createModel(File folderWithDataForLearning) {
         TfidfVectorizer vectorizer = new TfidfVectorizer.Builder()
-                .setMinWordFrequency(0)
+                .setMinWordFrequency(MIN_WORD_FREQUENCY)
                 .setStopWords(new ArrayList<>())
                 .setTokenizerFactory(IndexingUtils.getTokenizerFactory())
                 .setIterator(IndexingUtils.getLabelAwareIterator(folderWithDataForLearning))
                 .allowParallelTokenization(true)
                 .build();
         vectorizer.fit();
-        return vectorizer;
+        //TODO размерность признаков установить до 300
+        return new TfIdf(vectorizer);
     }
 
-    public static boolean saveModel(TfidfVectorizer tfidfVectorizer, File folderForSave) {
+    public static boolean saveModel(TfIdf tfIdf, File folderForSave) {
         try {
-            WordVectorSerializer.writeVocabCache(tfidfVectorizer.getVocabCache(), folderForSave);
+            WordVectorSerializer.writeVocabCache(tfIdf.getTfidfVectorizer().getVocabCache(), folderForSave);
         } catch (IOException ex) {
             log.info(ex.toString());
             return false;
@@ -51,7 +53,7 @@ public class TfIIdfUtils {
      * @param folderWithDataForLearning
      * @return null if an error occured while loading model
      */
-    public static TfidfVectorizer loadModel(File folderWithModel, File folderWithDataForLearning) {
+    public static TfIdf loadModel(File folderWithModel, File folderWithDataForLearning) {
         VocabCache<VocabWord> loadCache;
         try {
             loadCache = WordVectorSerializer.readVocabCache(folderWithModel);
@@ -62,14 +64,15 @@ public class TfIIdfUtils {
         RusUTF8FileLabelAwareIterator iterator = IndexingUtils.getLabelAwareIterator(folderWithDataForLearning);
         loadCache.incrementTotalDocCount(iterator.getSize());
 
-        return new TfidfVectorizer.Builder()
-                .setMinWordFrequency(0)
+        return new TfIdf(new TfidfVectorizer.Builder()
+                .setMinWordFrequency(MIN_WORD_FREQUENCY)
                 .setStopWords(new ArrayList<>())
                 .setVocab(loadCache)
                 .setTokenizerFactory(IndexingUtils.getTokenizerFactory())
                 .setIterator(iterator)
                 .allowParallelTokenization(true)
-                .build();
+                .build()
+        );
     }
 
 }

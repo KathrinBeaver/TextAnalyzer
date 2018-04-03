@@ -8,7 +8,8 @@ package com.mai.textanalyzer.indexing.common;
 import com.mai.textanalyzer.word_processing.MyPreprocessor;
 import com.mai.textanalyzer.word_processing.RusUTF8FileLabelAwareIterator;
 import java.io.File;
-import org.deeplearning4j.text.documentiterator.LabelAwareIterator;
+import java.util.ArrayList;
+import java.util.List;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
 
@@ -32,6 +33,16 @@ public final class IndexingUtils {
                 .addSourceFolder(folderWithDataForLearning)
                 .build();
         return iterator;
+    }
+
+    public static List<String> getTopics(File directoryWithData) {
+        List<String> topics = new ArrayList<>();
+        for (File file : directoryWithData.listFiles()) {
+            if (file.isDirectory()) {
+                topics.add(file.getName());
+            }
+        }
+        return topics;
     }
 
 }

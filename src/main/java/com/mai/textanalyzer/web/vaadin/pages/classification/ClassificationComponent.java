@@ -5,6 +5,7 @@
  */
 package com.mai.textanalyzer.web.vaadin.pages.classification;
 
+import com.mai.textanalyzer.indexing.doc2vec.Doc2Vec;
 import com.mai.textanalyzer.indexing.doc2vec.Doc2VecUtils;
 import com.mai.textanalyzer.ui.file_upload.DocUploader;
 import com.mai.textanalyzer.ui.vectorization.VectorizationPanel;
@@ -19,7 +20,6 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import org.apache.log4j.Logger;
-import org.deeplearning4j.models.paragraphvectors.ParagraphVectors;
 import org.nd4j.linalg.primitives.Pair;
 
 /**
@@ -31,7 +31,7 @@ public class ClassificationComponent extends CustomComponent {
     private final File saveModelFile = new File("G:/DocForTest/SaveModel/1/Doc2Vec");
 
     private final VectorizationPanel panel = new VectorizationPanel();
-    private ParagraphVectors pv;
+    private Doc2Vec doc2Vec;
     private final DocUploader receiver = new DocUploader();
     private final Upload upload = new Upload("Загрузите текст здесь", receiver);
     private final Button startClassificationButton = new Button("Начать классификацию");
@@ -66,7 +66,7 @@ public class ClassificationComponent extends CustomComponent {
 
         setCompositionRoot(vLayout);
 
-        pv = Doc2VecUtils.loadModel(saveModelFile);
+        doc2Vec = Doc2VecUtils.loadModel(saveModelFile);
     }
 
     private void initListiners(Upload upload) {
@@ -93,7 +93,7 @@ public class ClassificationComponent extends CustomComponent {
                 java.util.logging.Logger.getLogger(ClassificationComponent.class.getName()).log(Level.SEVERE, null, ex);
             }
             int count = 1;
-            for (Pair<String, Double> pairs : Doc2VecUtils.getTopics(pv, document)) {
+            for (Pair<String, Double> pairs : Doc2VecUtils.getTopics(doc2Vec, document)) {
                 topicTable.addItem(new Object[]{pairs.getFirst(), pairs.getSecond()}, count);
                 count++;
             }
