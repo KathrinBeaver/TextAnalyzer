@@ -24,35 +24,38 @@ import weka.classifiers.AbstractClassifier;
  * @author Sergey
  */
 public class Creater {
-
+    
     public static int LAYER_SIZE = 300;
-
+    
     public static void main(String[] args) {
-        File folderWithDataForTest = new File("E:\\DocForTest\\MiniTest\\DataTest");
-        File folderForSave = new File("E:\\DocForTest\\MiniTest\\SaveModel\\WekaClassifier\\WekaClassifierModel");
-
-        WekaClassifier wc = WekaUtils.loadModel(folderForSave);
-
-        RusUTF8FileLabelAwareIterator tearchingIteratorTest = new RusUTF8FileLabelAwareIterator.Builder()
-                .addSourceFolder(folderWithDataForTest)
-                .build();
-
-        File folderWithDoc2Vec = new File("E:\\DocForTest\\MiniTest\\SaveModel\\Doc2Vec\\Doc2VecModel");
-        Doc2Vec paragraphVectors = Doc2VecUtils.loadModel(folderWithDoc2Vec);
-        while (tearchingIteratorTest.hasNext()) {
-            LabelledDocument next = tearchingIteratorTest.next();
-            wc.classifyMessage(paragraphVectors.getIndex(next.getContent()));
-        }
+        File folderWithDataForTest = new File("E:\\DocForTest\\MiniTest\\DataLearning");
+        File folderForSave = new File("E:\\DocForTest\\MiniTest\\SaveModel\\Doc2Vec\\Doc2VecModel");
+        createAndSaveDoc2Vec(folderWithDataForTest, folderForSave);
+//        File folderWithDataForTest = new File("E:\\DocForTest\\MiniTest\\DataTest");
+//        File folderForSave = new File("E:\\DocForTest\\MiniTest\\SaveModel\\WekaClassifier\\WekaClassifierModel");
+//
+//        WekaClassifier wc = WekaUtils.loadModel(folderForSave);
+//
+//        RusUTF8FileLabelAwareIterator tearchingIteratorTest = new RusUTF8FileLabelAwareIterator.Builder()
+//                .addSourceFolder(folderWithDataForTest)
+//                .build();
+//
+//        File folderWithDoc2Vec = new File("E:\\DocForTest\\MiniTest\\SaveModel\\Doc2Vec\\Doc2VecModel");
+//        Doc2Vec paragraphVectors = Doc2VecUtils.loadModel(folderWithDoc2Vec);
+//        while (tearchingIteratorTest.hasNext()) {
+//            LabelledDocument next = tearchingIteratorTest.next();
+//            wc.classifyMessage(paragraphVectors.getIndex(next.getContent()));
+//        }
     }
-
+    
     public static void createAndSaveDoc2Vec(File folderWithDataForLearning, File folderForSave) {
         Doc2VecUtils.saveModel(Doc2VecUtils.createModel(folderWithDataForLearning), folderForSave);
     }
-
+    
     public static void createAndSaveTfIIdf(File folderWithDataForLearning, File folderForSave) {
         TfIIdfUtils.saveModel(TfIIdfUtils.createModel(folderWithDataForLearning), folderForSave);
     }
-
+    
     public static void createAndSaveWekaClassifier(AbstractClassifier classifier, Indexer indexer, File folderWithDataForLearning, File folderForSave) {
         List<String> topics = IndexingUtils.getTopics(folderWithDataForLearning);
         WekaClassifier wc = new WekaClassifier(classifier, LAYER_SIZE, topics);
