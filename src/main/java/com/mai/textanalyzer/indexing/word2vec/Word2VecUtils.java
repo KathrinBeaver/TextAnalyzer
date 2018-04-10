@@ -5,6 +5,7 @@
  */
 package com.mai.textanalyzer.indexing.word2vec;
 
+import com.mai.textanalyzer.indexing.common.StopWords;
 import java.io.File;
 import java.io.FileNotFoundException;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
@@ -49,6 +50,7 @@ public class Word2VecUtils {
                 .seed(42)
                 .windowSize(5)
                 .iterate(iter)
+                .stopWords(StopWords.getStopWords())
                 .tokenizerFactory(t)
                 .build();
 

@@ -6,6 +6,7 @@
 package com.mai.textanalyzer.indexing.tf_idf;
 
 import com.mai.textanalyzer.indexing.common.IndexingUtils;
+import com.mai.textanalyzer.indexing.common.StopWords;
 import com.mai.textanalyzer.word_processing.RusUTF8FileLabelAwareIterator;
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +29,7 @@ public class TfIIdfUtils {
     public static TfIdf createModel(File folderWithDataForLearning) {
         TfidfVectorizer vectorizer = new TfidfVectorizer.Builder()
                 .setMinWordFrequency(MIN_WORD_FREQUENCY)
-                .setStopWords(new ArrayList<>())
+                .setStopWords(StopWords.getStopWords())
                 .setTokenizerFactory(IndexingUtils.getTokenizerFactory())
                 .setIterator(IndexingUtils.getLabelAwareIterator(folderWithDataForLearning))
                 .allowParallelTokenization(true)

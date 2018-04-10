@@ -7,6 +7,7 @@ package com.mai.textanalyzer.indexing.doc2vec;
 
 import static com.mai.textanalyzer.creater.Creater.LAYER_SIZE;
 import com.mai.textanalyzer.indexing.common.IndexingUtils;
+import com.mai.textanalyzer.indexing.common.StopWords;
 import com.mai.textanalyzer.indexing.doc2vec.tools.LabelSeeker;
 import com.mai.textanalyzer.indexing.doc2vec.tools.MeansBuilder;
 import com.mai.textanalyzer.word_processing.MyPreprocessor;
@@ -45,6 +46,7 @@ public class Doc2VecUtils {
                 .layerSize(LAYER_SIZE)
                 .batchSize(1000)
                 .epochs(20)
+                .stopWords(StopWords.getStopWords())
                 .iterate(iterator)
                 .trainWordVectors(true)
                 .tokenizerFactory(IndexingUtils.getTokenizerFactory())
