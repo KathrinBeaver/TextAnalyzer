@@ -99,7 +99,6 @@ public class WekaClassifier implements Serializable {
      *
      * @param matrixTextModel
      * @return
-     * @throws java.lang.Exception
      */
     public String classifyMessage(INDArray matrixTextModel) {
         try {
@@ -114,8 +113,25 @@ public class WekaClassifier implements Serializable {
             double predicted = classifier.classifyInstance(instance);
             // Classify instance.
             String topic = data.classAttribute().value((int) predicted);
-            System.out.println("Message classified as : " + topic);
+//            System.out.println("Message classified as : " + topic);
             return topic;
+        } catch (Exception ex) {
+            Logger.getLogger(WekaClassifier.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    public double[] getDistribution(INDArray matrixTextModel) {
+        try {
+            // Check if classifier has been built.
+            if (data.numInstances() == 0) {
+                return null;
+//            throw new Exception("No classifier available.");
+            }
+            // Convert message string into instance.
+            Instance instance = makeInstance(matrixTextModel);
+            // Get index of predicted class value.
+            return classifier.distributionForInstance(instance);
         } catch (Exception ex) {
             Logger.getLogger(WekaClassifier.class.getName()).log(Level.SEVERE, null, ex);
             return null;
