@@ -14,4 +14,7 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 public interface Indexer {
 
     public INDArray getIndex(String text);
+
+    public int getDimensionSize();
+
 }

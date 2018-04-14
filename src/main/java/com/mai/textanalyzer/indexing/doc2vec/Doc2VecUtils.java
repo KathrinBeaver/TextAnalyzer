@@ -5,9 +5,9 @@
  */
 package com.mai.textanalyzer.indexing.doc2vec;
 
-import static com.mai.textanalyzer.creater.Creater.LAYER_SIZE;
 import com.mai.textanalyzer.indexing.common.IndexingUtils;
 import com.mai.textanalyzer.indexing.common.StopWords;
+import static com.mai.textanalyzer.indexing.doc2vec.Doc2Vec.LAYER_SIZE;
 import com.mai.textanalyzer.indexing.doc2vec.tools.LabelSeeker;
 import com.mai.textanalyzer.indexing.doc2vec.tools.MeansBuilder;
 import com.mai.textanalyzer.word_processing.MyPreprocessor;

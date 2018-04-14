@@ -8,6 +8,7 @@ package com.mai.textanalyzer.indexing.tf_idf;
 import com.mai.textanalyzer.indexing.common.Indexer;
 import org.deeplearning4j.bagofwords.vectorizer.TfidfVectorizer;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import weka.core.stemmers.SnowballStemmer;
 
 /**
  *
@@ -28,6 +29,14 @@ public class TfIdf implements Indexer {
     @Override
     public INDArray getIndex(String text) {
         return tfidfVectorizer.transform(text);
+    }
+
+//    public INDArray getSizeFitures() {
+//        return tfidfVectorizer.transform(text);
+//    }
+    @Override
+    public int getDimensionSize() {
+        return tfidfVectorizer.getVocabCache().numWords();
     }
 
 }

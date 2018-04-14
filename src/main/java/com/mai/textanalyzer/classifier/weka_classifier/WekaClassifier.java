@@ -7,6 +7,7 @@ package com.mai.textanalyzer.classifier.weka_classifier;
 
 import com.mai.textanalyzer.indexing.common.BasicTextModel;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,6 +59,10 @@ public class WekaClassifier implements Serializable {
         // Convert message string into instance.
         Instance instance = makeInstance(textModel);
         data.add(instance);
+
+    }
+
+    public void buildClassifier() {
         Instances instances = new Instances(data);
         try {
             classifier.buildClassifier(instances);
@@ -80,16 +85,15 @@ public class WekaClassifier implements Serializable {
      */
     private Instance makeInstance(INDArray iNDArray) {
 
-        Instance instance = new DenseInstance(iNDArray.length() + 1);
-
-        NdIndexIterator iter = new NdIndexIterator(iNDArray.shape());
+        double[] atr = new double[iNDArray.length() + 1];
+        NdIndexIterator iter2 = new NdIndexIterator(iNDArray.shape());
         int counter = 0;
-        while (iter.hasNext()) {
-            int[] nextIndex = iter.next();
-            instance.setValue(counter, iNDArray.getDouble(nextIndex));
+        while (iter2.hasNext()) {
+            int[] nextIndex = iter2.next();
+            atr[counter] = iNDArray.getDouble(nextIndex);
             counter++;
         }
-        // Give instance access to attribute information from the dataset.
+        Instance instance = new SparseInstance(1, atr);
         instance.setDataset(data);
         return instance;
     }
