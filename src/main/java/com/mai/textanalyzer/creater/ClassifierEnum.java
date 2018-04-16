@@ -5,13 +5,15 @@
  */
 package com.mai.textanalyzer.creater;
 
+import com.mai.textanalyzer.indexing.common.IndexerEnum;
+
 /**
  *
  * @author Sergey
  */
 public enum ClassifierEnum {
 
-    NAIVE_BAYES("NaiveBayesModel");
+    NAIVE_BAYES("NaiveBayes");
 
     private final String nameModel;
 
@@ -21,6 +23,10 @@ public enum ClassifierEnum {
 
     public String getModelName() {
         return nameModel;
+    }
+
+    public static String getFullNameModel(ClassifierEnum classifierEnum, IndexerEnum indexerEnum) {
+        return classifierEnum.getModelName() + indexerEnum.getModelName();
     }
 
 }

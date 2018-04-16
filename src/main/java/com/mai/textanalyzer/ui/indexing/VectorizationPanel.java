@@ -5,7 +5,7 @@
  */
 package com.mai.textanalyzer.ui.indexing;
 
-import com.mai.textanalyzer.indexing.common.IndexingEnum;
+import com.mai.textanalyzer.indexing.common.IndexerEnum;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.FormLayout;
@@ -19,7 +19,7 @@ import java.util.EnumSet;
 public class VectorizationPanel extends CustomComponent {
 
     public VectorizationPanel() {
-        EnumSet<IndexingEnum> enumSet = EnumSet.allOf(IndexingEnum.class);
+        EnumSet<IndexerEnum> enumSet = EnumSet.allOf(IndexerEnum.class);
         ComboBox cb = new ComboBox();
 //        cb.setItems(enumSet);
         cb.addItems(enumSet);

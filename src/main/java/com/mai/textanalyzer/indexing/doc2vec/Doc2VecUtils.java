@@ -35,6 +35,7 @@ import org.nd4j.linalg.primitives.Pair;
  */
 public class Doc2VecUtils {
 
+    private static final int MIN_WORD_FREQUENCY = 2;
     private static final Logger log = Logger.getLogger(Doc2VecUtils.class);
 
 //    File file = new File("D:\\testClassDoc");
@@ -45,11 +46,13 @@ public class Doc2VecUtils {
                 .minLearningRate(0.001)
                 .layerSize(LAYER_SIZE)
                 .batchSize(1000)
-                .epochs(20)
+                .epochs(15)
                 .stopWords(StopWords.getStopWords())
                 .iterate(iterator)
                 .trainWordVectors(true)
                 .tokenizerFactory(IndexingUtils.getTokenizerFactory())
+                .minWordFrequency(MIN_WORD_FREQUENCY)
+                //                .limitVocabularySize(LAYER_SIZE) Every 10 million word types need about 1GB of RAM
                 .build();
 
         // Start model training

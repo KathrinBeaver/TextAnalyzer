@@ -9,7 +9,7 @@ package com.mai.textanalyzer.indexing.common;
  *
  * @author Sergey
  */
-public enum IndexingEnum {
+public enum IndexerEnum {
     DOC2VEC(1, "Doc2Vec", "Doc2VecModel"),
     TF_IDF(2, "TfIdf", "TfIdfModel");
 
@@ -17,7 +17,7 @@ public enum IndexingEnum {
     private final String rusName;
     private final String modelName;
 
-    private IndexingEnum(int id, String rusName, String modelName) {
+    private IndexerEnum(int id, String rusName, String modelName) {
         this.id = id;
         this.rusName = rusName;
         this.modelName = modelName;

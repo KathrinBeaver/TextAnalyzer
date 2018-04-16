@@ -15,7 +15,7 @@ import org.nd4j.linalg.api.ndarray.INDArray;
  */
 public class Doc2Vec implements Indexer {
 
-    public static int LAYER_SIZE = 300;
+    public static int LAYER_SIZE = 100;
     private final ParagraphVectors paragraphVectors;
 
     public Doc2Vec(ParagraphVectors paragraphVectors) {

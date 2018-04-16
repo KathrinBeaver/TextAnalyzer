@@ -16,11 +16,13 @@ import java.nio.file.Files;
  */
 public final class FilesUtils {
 
+    private static final double PERCENT_OF_TEST_DOC = 30;// процент документов, который будет перенесен
+
     private FilesUtils() {
     }
 
     public static void main(String[] args) throws IOException {
-        createDocsForTest(new File("E:\\DocForClassification\\ClassDocLearning"), new File("E:\\DocForClassification\\ClassDocTest"));
+        createDocsForTest(new File("E:\\DataForClassifier\\RootFolderSize250\\DocForLearning"), new File("E:\\DataForClassifier\\RootFolderSize250\\DocForTest"));
 
     }
 
@@ -47,7 +49,7 @@ public final class FilesUtils {
             if (!testTopicDir.exists()) {
                 Files.createDirectory(testTopicDir.toPath());
             }
-            long amountTestDoc = Math.round((double) topicDir.listFiles().length * 0.30);
+            long amountTestDoc = Math.round((double) topicDir.listFiles().length * (PERCENT_OF_TEST_DOC / 100));
             for (File file : topicDir.listFiles()) {
                 if (file.isDirectory()) {
                     throw new RuntimeException(topicDir.getPath() + " directory can't contains folder");

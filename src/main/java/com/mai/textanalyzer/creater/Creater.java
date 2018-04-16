@@ -9,9 +9,9 @@ import com.mai.textanalyzer.classifier.weka_classifier.WekaClassifier;
 import com.mai.textanalyzer.classifier.weka_classifier.WekaUtils;
 import com.mai.textanalyzer.indexing.common.BasicTextModel;
 import com.mai.textanalyzer.indexing.common.Indexer;
-import com.mai.textanalyzer.indexing.common.IndexingEnum;
-import static com.mai.textanalyzer.indexing.common.IndexingEnum.DOC2VEC;
-import static com.mai.textanalyzer.indexing.common.IndexingEnum.TF_IDF;
+import com.mai.textanalyzer.indexing.common.IndexerEnum;
+import static com.mai.textanalyzer.indexing.common.IndexerEnum.DOC2VEC;
+import static com.mai.textanalyzer.indexing.common.IndexerEnum.TF_IDF;
 import com.mai.textanalyzer.indexing.common.IndexingUtils;
 import com.mai.textanalyzer.indexing.doc2vec.Doc2Vec;
 import com.mai.textanalyzer.indexing.doc2vec.Doc2VecUtils;
@@ -19,16 +19,11 @@ import com.mai.textanalyzer.indexing.tf_idf.TfIIdfUtils;
 import com.mai.textanalyzer.indexing.tf_idf.TfIdf;
 import com.mai.textanalyzer.word_processing.RusUTF8FileLabelAwareIterator;
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 import org.deeplearning4j.eval.Evaluation;
 import org.deeplearning4j.text.documentiterator.LabelledDocument;
 import org.deeplearning4j.text.documentiterator.LabelsSource;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import weka.classifiers.AbstractClassifier;
-import weka.classifiers.bayes.NaiveBayes;
-import weka.classifiers.functions.LinearRegression;
-import weka.classifiers.lazy.IBk;
 
 /**
  * утилиарный класс для удобного создания класфикаторов. Необхоима указыать
@@ -40,9 +35,9 @@ import weka.classifiers.lazy.IBk;
  */
 public final class Creater {
 
-    private final static String docForLearningFolder = "DocForLearning"; // Папка с данными для обучения
-    private final static String docForTestFolder = "DocForTest";//Папка с данными для тестирования
-    private final static String saveModelFolder = "SaveModel";//Папка в которую модель будет сохранена после обучения
+    private final static String DOC_FOR_LEARNING_FOLDER = "DocForLearning"; // Папка с данными для обучения
+    private final static String DOC_FOR_TEST_FOLDER = "DocForTest";//Папка с данными для тестирования
+    private final static String SAVE_MODEL_FOLDER = "SaveModel";//Папка в которую модель будет сохранена после обучения
 
     private Creater() {
     }
@@ -82,38 +77,63 @@ public final class Creater {
         }
     }
 
-    public static void createAndSaveDoc2Vec(File rootFolder) {
-        String modelName = DOC2VEC.getModelName();
-        checkRootFolderStracture(rootFolder, modelName, true);
-        File folderWithDataForLearning = new File(rootFolder, docForLearningFolder);
-        File folderForSave = new File(rootFolder, saveModelFolder + "\\" + modelName);
-        Doc2VecUtils.saveModel(Doc2VecUtils.createModel(folderWithDataForLearning), folderForSave);
+    public static File getDocForLearningFolder(File rootDir) {
+        return new File(rootDir, DOC_FOR_LEARNING_FOLDER);
     }
 
-    public static void createAndSaveTfIIdf(File rootFolder) {
+    public static File getDocForTestFolder(File rootDir) {
+        return new File(rootDir, DOC_FOR_TEST_FOLDER);
+    }
+
+    public static File getSaveModelFolder(File rootDir) {
+        return new File(rootDir, SAVE_MODEL_FOLDER);
+    }
+
+    private static Indexer createAndSaveDoc2Vec(File rootFolder) {
+        String modelName = DOC2VEC.getModelName();
+        checkRootFolderStracture(rootFolder, modelName, true);
+        File folderWithDataForLearning = getDocForLearningFolder(rootFolder);
+        File folderForSave = new File(getSaveModelFolder(rootFolder), modelName);
+        Doc2Vec doc2Vec = Doc2VecUtils.createModel(folderWithDataForLearning);
+        Doc2VecUtils.saveModel(doc2Vec, folderForSave);
+        return doc2Vec;
+    }
+
+    private static Indexer createAndSaveTfIIdf(File rootFolder) {
         String modelName = TF_IDF.getModelName();
         checkRootFolderStracture(rootFolder, modelName, true);
-        File folderWithDataForLearning = new File(rootFolder, docForLearningFolder);
-        File folderForSave = new File(rootFolder, saveModelFolder + "\\" + modelName);
-        TfIIdfUtils.saveModel(TfIIdfUtils.createModel(folderWithDataForLearning), folderForSave);
+        File folderWithDataForLearning = getDocForLearningFolder(rootFolder);
+        File folderForSave = new File(getSaveModelFolder(rootFolder), modelName);
+        TfIdf tfIdf = TfIIdfUtils.createModel(folderWithDataForLearning);
+        TfIIdfUtils.saveModel(tfIdf, folderForSave);
+        return tfIdf;
+    }
+
+    public static Indexer createAndSaveIndexer(IndexerEnum indexingEnum, File rootDir) {
+        if (indexingEnum == DOC2VEC) {
+            return createAndSaveDoc2Vec(rootDir);
+        } else if (indexingEnum == TF_IDF) {
+            return createAndSaveTfIIdf(rootDir);
+        }
+        throw new UnsupportedOperationException("Support " + indexingEnum + " yet not adding");
     }
 
     private static Indexer loadDoc2Vec(File rootFolder) {
         String modelName = DOC2VEC.getModelName();
         checkRootFolderStracture(rootFolder, modelName, false);
-        return Doc2VecUtils.loadModel(new File(rootFolder, saveModelFolder + "\\" + modelName));
+        return Doc2VecUtils.loadModel(new File(getSaveModelFolder(rootFolder), modelName));
     }
 
     private static Indexer loadTfIIdf(File rootFolder) {
         String modelName = TF_IDF.getModelName();
         checkRootFolderStracture(rootFolder, modelName, false);
-        File folderWithDataForLearning = new File(rootFolder, docForLearningFolder);
-        File folderForSave = new File(rootFolder, saveModelFolder + "\\" + modelName);
+        File folderWithDataForLearning = getDocForLearningFolder(rootFolder);
+        File folderForSave = new File(getSaveModelFolder(rootFolder), modelName);
         return TfIIdfUtils.loadModel(folderForSave, folderWithDataForLearning);
         //TODO убрать папку для обучения 
     }
 
-    public static Indexer loadIndexer(IndexingEnum indexingEnum, File rootDir) {
+    public static Indexer loadIndexer(IndexerEnum indexingEnum, File rootDir) {
         if (indexingEnum == DOC2VEC) {
             return loadDoc2Vec(rootDir);
         } else if (indexingEnum == TF_IDF) {
@@ -122,10 +142,10 @@ public final class Creater {
         throw new UnsupportedOperationException("Support " + indexingEnum + " yet not adding");
     }
 
-    public static void createAndSaveWekaClassifier(File rootFolder, ClassifierEnum classifier, IndexingEnum indexingEnum) {
-        String modelName = classifier.getModelName();
+    public static void createAndSaveWekaClassifier(File rootFolder, ClassifierEnum classifier, IndexerEnum indexingEnum) {
+        String modelName = ClassifierEnum.getFullNameModel(classifier, indexingEnum);
         checkRootFolderStracture(rootFolder, modelName, true);
-        File folderWithDataForLearning = new File(rootFolder, docForLearningFolder);
+        File folderWithDataForLearning = getDocForLearningFolder(rootFolder);
         List<String> topics = IndexingUtils.getTopics(folderWithDataForLearning);
         Indexer indexer = loadIndexer(indexingEnum, rootFolder);
         WekaClassifier wc = new WekaClassifier(CreaterClassifier.getClassifier(classifier), indexer.getDimensionSize(), topics);
@@ -143,8 +163,14 @@ public final class Creater {
             System.out.println(count + "/" + size);
         }
         wc.buildClassifier();
-        File folderForSave = new File(rootFolder, saveModelFolder + "\\" + modelName);
+        File folderForSave = new File(getSaveModelFolder(rootFolder), modelName);
         WekaUtils.saveModel(wc, folderForSave);
+    }
+
+    public static WekaClassifier loadWekaClassifier(File rootFolder, ClassifierEnum classifier, IndexerEnum indexingEnum) {
+        String modelName = ClassifierEnum.getFullNameModel(classifier, indexingEnum);
+        checkRootFolderStracture(rootFolder, modelName, false);
+        return WekaUtils.loadModel(new File(getSaveModelFolder(rootFolder), modelName));
     }
 
     /**
@@ -155,15 +181,15 @@ public final class Creater {
      * @param forSave true - if save model, false - if load model
      */
     private static void checkRootFolderStracture(File rootFolder, String modelName, boolean forSave) {
-        File checkingFile = new File(rootFolder, docForLearningFolder);
+        File checkingFile = getDocForLearningFolder(rootFolder);
         if (!checkingFile.exists() || !checkingFile.isDirectory()) {
             throw new RuntimeException("Не удалось найти: " + checkingFile.getPath());
         }
-        checkingFile = new File(rootFolder, docForTestFolder);
+        checkingFile = getDocForTestFolder(rootFolder);
         if (!checkingFile.exists() || !checkingFile.isDirectory()) {
             throw new RuntimeException("Не удалось найти: " + checkingFile.getPath());
         }
-        checkingFile = new File(rootFolder, saveModelFolder);
+        checkingFile = getSaveModelFolder(rootFolder);
         if (!checkingFile.exists() || !checkingFile.isDirectory()) {
             throw new RuntimeException("Не удалось найти: " + checkingFile.getPath());
         }
