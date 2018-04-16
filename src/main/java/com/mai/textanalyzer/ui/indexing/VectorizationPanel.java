@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mai.textanalyzer.ui.vectorization;
+package com.mai.textanalyzer.ui.indexing;
 
-import com.mai.textanalyzer.vectorization.common.VectorizationEnum;
+import com.mai.textanalyzer.indexing.common.IndexingEnum;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.FormLayout;
@@ -19,7 +19,7 @@ import java.util.EnumSet;
 public class VectorizationPanel extends CustomComponent {
 
     public VectorizationPanel() {
-        EnumSet<VectorizationEnum> enumSet = EnumSet.allOf(VectorizationEnum.class);
+        EnumSet<IndexingEnum> enumSet = EnumSet.allOf(IndexingEnum.class);
         ComboBox cb = new ComboBox();
 //        cb.setItems(enumSet);
         cb.addItems(enumSet);

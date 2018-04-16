@@ -8,8 +8,6 @@ package com.mai.textanalyzer.files_utils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * класс для создания выборок
@@ -22,7 +20,7 @@ public final class FilesUtils {
     }
 
     public static void main(String[] args) throws IOException {
-        createDocsForTest(new File("E:\\DocForTest\\DataForLearning"),new File("E:\\DocForTest\\DataForTest"));
+        createDocsForTest(new File("E:\\DocForClassification\\ClassDocLearning"), new File("E:\\DocForClassification\\ClassDocTest"));
 
     }
 
@@ -49,7 +47,7 @@ public final class FilesUtils {
             if (!testTopicDir.exists()) {
                 Files.createDirectory(testTopicDir.toPath());
             }
-            long amountTestDoc = Math.round((double) topicDir.listFiles().length * 0.3);
+            long amountTestDoc = Math.round((double) topicDir.listFiles().length * 0.30);
             for (File file : topicDir.listFiles()) {
                 if (file.isDirectory()) {
                     throw new RuntimeException(topicDir.getPath() + " directory can't contains folder");

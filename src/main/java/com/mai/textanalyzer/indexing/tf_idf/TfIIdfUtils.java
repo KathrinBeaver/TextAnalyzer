@@ -23,7 +23,7 @@ import org.deeplearning4j.models.word2vec.wordstore.VocabCache;
  */
 public class TfIIdfUtils {
 
-    private static final int MIN_WORD_FREQUENCY = 2;
+    private static final int MIN_WORD_FREQUENCY = 3;
     private final static Logger log = Logger.getLogger(TfIIdfUtils.class.getName());
 
     public static TfIdf createModel(File folderWithDataForLearning) {
@@ -35,7 +35,6 @@ public class TfIIdfUtils {
                 .allowParallelTokenization(true)
                 .build();
         vectorizer.fit();
-        //TODO размерность признаков установить до 300
         return new TfIdf(vectorizer);
     }
 

@@ -3,21 +3,24 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mai.textanalyzer.vectorization.common;
+package com.mai.textanalyzer.indexing.common;
 
 /**
  *
  * @author Sergey
  */
-public enum VectorizationEnum {
-    DOC2VEC(1, "Doc2Vec");
+public enum IndexingEnum {
+    DOC2VEC(1, "Doc2Vec", "Doc2VecModel"),
+    TF_IDF(2, "TfIdf", "TfIdfModel");
 
     private final int id;
     private final String rusName;
+    private final String modelName;
 
-    private VectorizationEnum(int id, String rusName) {
+    private IndexingEnum(int id, String rusName, String modelName) {
         this.id = id;
         this.rusName = rusName;
+        this.modelName = modelName;
     }
 
     public int getId() {
@@ -26,6 +29,10 @@ public enum VectorizationEnum {
 
     public String getRusName() {
         return rusName;
+    }
+
+    public String getModelName() {
+        return modelName;
     }
 
 }

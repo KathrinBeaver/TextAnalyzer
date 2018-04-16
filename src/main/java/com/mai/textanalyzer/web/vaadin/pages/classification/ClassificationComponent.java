@@ -8,7 +8,7 @@ package com.mai.textanalyzer.web.vaadin.pages.classification;
 import com.mai.textanalyzer.indexing.doc2vec.Doc2Vec;
 import com.mai.textanalyzer.indexing.doc2vec.Doc2VecUtils;
 import com.mai.textanalyzer.ui.file_upload.DocUploader;
-import com.mai.textanalyzer.ui.vectorization.VectorizationPanel;
+import com.mai.textanalyzer.ui.indexing.VectorizationPanel;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
