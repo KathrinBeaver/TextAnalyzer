@@ -43,38 +43,9 @@ public final class Creater {
     }
 
     public static void main(String[] args) {
-        File folderWithDataForLearning = new File("E:\\DocForTest\\DataForLearning");
-        File folderWithtfIdf = new File("E:\\DocForTest\\SaveModel\\tfidf\\tfidfModel");
-//        File folderForSave = new File("E:\\SaveModel\\TFIDF\\TfIdfModel");
-//        createAndSaveTfIIdf(folderWithDataForLearning, folderForSave);
-        TfIdf tfIdf = TfIIdfUtils.loadModel(folderWithtfIdf, folderWithDataForLearning);
-//        createAndSaveWekaClassifier(new NaiveBayes(), tfIdf, folderWithDataForLearning, folderForSave);
-        File folderWithDataForTest = new File("E:\\DocForTest\\DataForTest");
-        RusUTF8FileLabelAwareIterator tearchingIteratorTest = new RusUTF8FileLabelAwareIterator.Builder()
-                .addSourceFolder(folderWithDataForTest)
-                .build();
-        File folderForSave = new File("E:\\DocForTest\\SaveModel\\NaiveBase\\NaiveBaseModel");
-//        File folderWithDoc2Vec = new File("E:\\DocForTest\\MiniTest\\SaveModel\\Doc2Vec\\Doc2VecModel");
-        WekaClassifier wc = WekaUtils.loadModel(folderForSave);
-//        Doc2Vec paragraphVectors = Doc2VecUtils.loadModel(folderWithDoc2Vec);
-        LabelsSource labelsSource = tearchingIteratorTest.getLabelsSource();
-        Evaluation eval = new Evaluation(labelsSource.size());
-        int count = 0;
-        while (tearchingIteratorTest.hasNext()) {
-            LabelledDocument next = tearchingIteratorTest.next();
-            INDArray matrixTextModel = tfIdf.getIndex(next.getContent());
-            String predict = wc.classifyMessage(matrixTextModel);
-            String topic = next.getLabel();
-            count++;
-            System.out.println(count + ": " + topic + " - " + predict);
-            eval.eval(labelsSource.indexOf(predict), labelsSource.indexOf(topic));
-//            System.out.println(Arrays.toString(wc.getDistribution(matrixTextModel)));
-        }
-        System.out.println(eval.stats(true));
-        for (String label : labelsSource.getLabels()) {
-            System.out.println(label + " ------------------");
-            eval.f1(labelsSource.indexOf(label));
-        }
+        File rootFolder = new File("E:\\DataForClassifier\\RootFolderSize200");
+
+       
     }
 
     public static File getDocForLearningFolder(File rootDir) {

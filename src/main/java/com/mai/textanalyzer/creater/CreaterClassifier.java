@@ -7,6 +7,7 @@ package com.mai.textanalyzer.creater;
 
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.functions.SMO;
 
 /**
  *
@@ -17,6 +18,9 @@ public class CreaterClassifier {
     public static AbstractClassifier getClassifier(ClassifierEnum classifier) {
         if (classifier == ClassifierEnum.NAIVE_BAYES) {
             return new NaiveBayes();
+        }
+        if (classifier == ClassifierEnum.SVM) {
+            return new SMO();
         }
         throw new UnsupportedOperationException("Classifier support for" + classifier.name() + " not yet added");
     }

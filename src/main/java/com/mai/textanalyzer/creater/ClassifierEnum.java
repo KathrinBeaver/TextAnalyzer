@@ -13,7 +13,8 @@ import com.mai.textanalyzer.indexing.common.IndexerEnum;
  */
 public enum ClassifierEnum {
 
-    NAIVE_BAYES("NaiveBayes");
+    NAIVE_BAYES("NaiveBayes"),
+    SVM("Support Vector Machine");
 
     private final String nameModel;
 

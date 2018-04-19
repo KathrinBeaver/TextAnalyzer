@@ -66,7 +66,7 @@ public class ClassificationComponent extends CustomComponent {
 
         setCompositionRoot(vLayout);
 
-        doc2Vec = Doc2VecUtils.loadModel(saveModelFile);
+//        doc2Vec = Doc2VecUtils.loadModel(saveModelFile);
     }
 
     private void initListiners(Upload upload) {
