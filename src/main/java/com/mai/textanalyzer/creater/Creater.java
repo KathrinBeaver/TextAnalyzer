@@ -43,9 +43,8 @@ public final class Creater {
     }
 
     public static void main(String[] args) {
-        File rootFolder = new File("E:\\DataForClassifier\\RootFolderSize200");
-
-       
+        File rootFolder = new File("E:\\DataForClassifier\\RootFolderSize104626");
+        createAndSaveDoc2Vec(rootFolder);
     }
 
     public static File getDocForLearningFolder(File rootDir) {

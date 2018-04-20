@@ -10,6 +10,7 @@ import com.mai.textanalyzer.creater.ClassifierEnum;
 import com.mai.textanalyzer.creater.Creater;
 import static com.mai.textanalyzer.creater.Creater.createAndSaveWekaClassifier;
 import static com.mai.textanalyzer.creater.Creater.loadWekaClassifier;
+import com.mai.textanalyzer.dao.classifier.IPropertysClassifierDao;
 import com.mai.textanalyzer.indexing.common.Indexer;
 import com.mai.textanalyzer.indexing.common.IndexerEnum;
 import static com.mai.textanalyzer.indexing.common.IndexerEnum.DOC2VEC;
@@ -43,8 +44,9 @@ public class Tester {
 //        testingRootFolders.add(new File("E:\\DataForClassifier\\RootFolderSize6582"));
 //        testingRootFolders.add(new File("E:\\DataForClassifier\\RootFolderSize13711"));
 
-        ApplicationContext ctx = new ClassPathXmlApplicationContext("SpringXMLConfig.xml");
-
+        ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-config.xml");
+        IPropertysClassifierDao classifierDao = ctx.getBean(IPropertysClassifierDao.class);
+        System.out.println(classifierDao.getInfo());
 
 //        File rootFolder = new File("E:\\DataForClassifier\\RootFolderSize6582");
 //        createAndSaveWekaClassifier(rootFolder, ClassifierEnum.NAIVE_BAYES, DOC2VEC);
