@@ -5,25 +5,21 @@
  */
 package com.mai.textanalyzer.creater;
 
+import com.mai.textanalyzer.classifier.common.ClassifierEnum;
+import com.mai.textanalyzer.classifier.common.ClassifierTypeEnum;
+import com.mai.textanalyzer.classifier.common.TextClassifier;
+import com.mai.textanalyzer.classifier.weka_classifier.CreaterWekaClassifier;
 import com.mai.textanalyzer.classifier.weka_classifier.WekaClassifier;
 import com.mai.textanalyzer.classifier.weka_classifier.WekaUtils;
-import com.mai.textanalyzer.indexing.common.BasicTextModel;
 import com.mai.textanalyzer.indexing.common.Indexer;
 import com.mai.textanalyzer.indexing.common.IndexerEnum;
 import static com.mai.textanalyzer.indexing.common.IndexerEnum.DOC2VEC;
 import static com.mai.textanalyzer.indexing.common.IndexerEnum.TF_IDF;
-import com.mai.textanalyzer.indexing.common.IndexingUtils;
 import com.mai.textanalyzer.indexing.doc2vec.Doc2Vec;
 import com.mai.textanalyzer.indexing.doc2vec.Doc2VecUtils;
 import com.mai.textanalyzer.indexing.tf_idf.TfIIdfUtils;
 import com.mai.textanalyzer.indexing.tf_idf.TfIdf;
-import com.mai.textanalyzer.word_processing.RusUTF8FileLabelAwareIterator;
 import java.io.File;
-import java.util.List;
-import org.deeplearning4j.eval.Evaluation;
-import org.deeplearning4j.text.documentiterator.LabelledDocument;
-import org.deeplearning4j.text.documentiterator.LabelsSource;
-import org.nd4j.linalg.api.ndarray.INDArray;
 
 /**
  * утилиарный класс для удобного создания класфикаторов. Необхоима указыать
@@ -112,35 +108,27 @@ public final class Creater {
         throw new UnsupportedOperationException("Support " + indexingEnum + " yet not adding");
     }
 
-    public static void createAndSaveWekaClassifier(File rootFolder, ClassifierEnum classifier, IndexerEnum indexingEnum) {
+    public static void createAndSaveClassifier(File rootFolder, ClassifierEnum classifier, IndexerEnum indexingEnum) {
         String modelName = ClassifierEnum.getFullNameModel(classifier, indexingEnum);
         checkRootFolderStracture(rootFolder, modelName, true);
-        File folderWithDataForLearning = getDocForLearningFolder(rootFolder);
-        List<String> topics = IndexingUtils.getTopics(folderWithDataForLearning);
         Indexer indexer = loadIndexer(indexingEnum, rootFolder);
-        WekaClassifier wc = new WekaClassifier(CreaterClassifier.getClassifier(classifier), indexer.getDimensionSize(), topics);
-
-        RusUTF8FileLabelAwareIterator tearchingIterator = new RusUTF8FileLabelAwareIterator.Builder()
-                .addSourceFolder(folderWithDataForLearning)
-                .build();
-        int size = tearchingIterator.getSize();
-        int count = 0;
-        while (tearchingIterator.hasNext()) {
-            LabelledDocument next = tearchingIterator.next();
-            BasicTextModel basicTextModel = new BasicTextModel(next.getLabels().iterator().next(), indexer.getIndex(next.getContent()));
-            wc.updateModel(basicTextModel);
-            count++;
-            System.out.println(count + "/" + size);
+        if (classifier.getClassifierType() == ClassifierTypeEnum.WEKA_CLASSIFIER) {
+            WekaClassifier wc = CreaterWekaClassifier.getClassifier(classifier, indexer, rootFolder);
+            File folderForSave = new File(getSaveModelFolder(rootFolder), modelName);
+            WekaUtils.saveModel(wc, folderForSave);
+        } else {
+            throw new UnsupportedOperationException("Classifier support for" + classifier.getClassifierType() + " not yet added");
         }
-        wc.buildClassifier();
-        File folderForSave = new File(getSaveModelFolder(rootFolder), modelName);
-        WekaUtils.saveModel(wc, folderForSave);
     }
 
-    public static WekaClassifier loadWekaClassifier(File rootFolder, ClassifierEnum classifier, IndexerEnum indexingEnum) {
+    public static TextClassifier loadClassifier(File rootFolder, ClassifierEnum classifier, IndexerEnum indexingEnum) {
         String modelName = ClassifierEnum.getFullNameModel(classifier, indexingEnum);
         checkRootFolderStracture(rootFolder, modelName, false);
-        return WekaUtils.loadModel(new File(getSaveModelFolder(rootFolder), modelName));
+        if (classifier.getClassifierType() == ClassifierTypeEnum.WEKA_CLASSIFIER) {
+            return WekaUtils.loadModel(new File(getSaveModelFolder(rootFolder), modelName));
+        } else {
+            throw new UnsupportedOperationException("UnsupportedOperation");
+        }
     }
 
     /**
@@ -165,9 +153,9 @@ public final class Creater {
         }
         File saveModel = new File(checkingFile, modelName);
         if (forSave && saveModel.exists()) {
-            throw new RuntimeException("Уже существует сохраненая модель: " + saveModel.getPath());
+            throw new SaveModelException("Уже существует сохраненая модель: " + saveModel.getPath());
         } else if (!forSave && !saveModel.exists()) {
-            throw new RuntimeException("Модель " + saveModel.getPath() + "для загруки не найдена");
+            throw new SaveModelException("Модель " + saveModel.getPath() + "для загруки не найдена");
         }
     }
 

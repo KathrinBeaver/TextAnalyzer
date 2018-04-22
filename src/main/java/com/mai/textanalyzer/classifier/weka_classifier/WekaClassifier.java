@@ -5,22 +5,27 @@
  */
 package com.mai.textanalyzer.classifier.weka_classifier;
 
+import com.mai.textanalyzer.classifier.common.TextClassifier;
 import com.mai.textanalyzer.indexing.common.BasicTextModel;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.nd4j.linalg.api.iter.NdIndexIterator;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import weka.core.*;
-import weka.classifiers.*;
+import weka.classifiers.AbstractClassifier;
+import weka.classifiers.Classifier;
+import weka.core.Attribute;
+import weka.core.FastVector;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.SparseInstance;
 
 /**
  *
  * @author Sergey
  */
-public class WekaClassifier implements Serializable {
+public class WekaClassifier implements Serializable, TextClassifier {
 
     /* The training data. */
     private Instances data = null;
@@ -104,6 +109,7 @@ public class WekaClassifier implements Serializable {
      * @param matrixTextModel
      * @return
      */
+    @Override
     public String classifyMessage(INDArray matrixTextModel) {
         try {
             // Check if classifier has been built.
@@ -125,6 +131,7 @@ public class WekaClassifier implements Serializable {
         }
     }
 
+    @Override
     public double[] getDistribution(INDArray matrixTextModel) {
         try {
             // Check if classifier has been built.
@@ -142,4 +149,7 @@ public class WekaClassifier implements Serializable {
         }
     }
 
+//    public String[] getOptions() {
+//        return classifier.getOptions();
+//    }
 }

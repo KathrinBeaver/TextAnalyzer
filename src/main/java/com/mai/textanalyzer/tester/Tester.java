@@ -5,11 +5,10 @@
  */
 package com.mai.textanalyzer.tester;
 
+import com.mai.textanalyzer.classifier.common.TextClassifier;
 import com.mai.textanalyzer.classifier.weka_classifier.WekaClassifier;
-import com.mai.textanalyzer.creater.ClassifierEnum;
+import com.mai.textanalyzer.classifier.common.ClassifierEnum;
 import com.mai.textanalyzer.creater.Creater;
-import static com.mai.textanalyzer.creater.Creater.createAndSaveWekaClassifier;
-import static com.mai.textanalyzer.creater.Creater.loadWekaClassifier;
 import com.mai.textanalyzer.dao.classifier.IPropertysClassifierDao;
 import com.mai.textanalyzer.indexing.common.Indexer;
 import com.mai.textanalyzer.indexing.common.IndexerEnum;
@@ -29,6 +28,9 @@ import org.deeplearning4j.text.documentiterator.LabelsSource;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import static com.mai.textanalyzer.creater.Creater.loadClassifier;
+import static com.mai.textanalyzer.creater.Creater.createAndSaveClassifier;
+import com.mai.textanalyzer.creater.SaveModelException;
 
 /**
  *
@@ -40,18 +42,20 @@ public class Tester {
 
     public static void main(String[] args) {
 //        List<File> testingRootFolders = new ArrayList<>();
-//        testingRootFolders.add(new File("E:\\DataForClassifier\\RootFolderSize4605"));
+//        testingRootFolders.add(new File("E:\\DataForClassifier\\RootFolderSize200"));
 //        testingRootFolders.add(new File("E:\\DataForClassifier\\RootFolderSize6582"));
 //        testingRootFolders.add(new File("E:\\DataForClassifier\\RootFolderSize13711"));
 
-        ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-config.xml");
-        IPropertysClassifierDao classifierDao = ctx.getBean(IPropertysClassifierDao.class);
-        System.out.println(classifierDao.getInfo());
-
-//        File rootFolder = new File("E:\\DataForClassifier\\RootFolderSize6582");
-//        createAndSaveWekaClassifier(rootFolder, ClassifierEnum.NAIVE_BAYES, DOC2VEC);
-//        WekaClassifier wc = loadWekaClassifier(rootFolder, ClassifierEnum.NAIVE_BAYES, DOC2VEC);
+//        ApplicationContext ctx = new ClassPathXmlApplicationContext("spring-config.xml");
+//        IPropertysClassifierDao classifierDao = ctx.getBean(IPropertysClassifierDao.class);
+//        System.out.println(classifierDao.getInfo());
+        File rootFolder = new File("E:\\DataForClassifier\\RootFolderSize200");
+//        TextClassifier classifier = loadClassifier(rootFolder, ClassifierEnum.NAIVE_BAYES, DOC2VEC);
 //        Indexer indexer = Creater.loadIndexer(DOC2VEC, rootFolder);
+
+        createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.NAIVE_BAYES);
+        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.NAIVE_BAYES);
+
 //        System.out.println(Arrays.toString(wc.getDistribution(indexer.getIndex("ОглавлениеВведение Небольшой экскурс в развитии теории гравитацииО природе гравитационных силОсобенности гравитационного взаимодействияЗаключениеСписок литературыПриложение\n"
 //                + "ВведениеОдна из аксиом современной науки гласит: любые материальные объекты во Вселенной связаны между собой силами всемирного тяготения. Благодаря этим силам формируются и существуют небесные тела – планеты, звезды, галактики и Метагалактика в целом. Форма и структура этих тел и материальных систем, а также относительное движение и взаимодействие определяются динамическим равновесием между силами их тяготения и силами инерции масс.В течение всей своей жизни человек ощущает силу тяжести своего тела и предметов, которые ему приходится поднимать. Однако еще на полтора века раньше до Ньютона и Гука знаменитый польский ученый Николай Коперник писал о тяготении: «Тяжесть есть не что иное, как естественное стремление, которым отец Вселенной одарил все частицы, а именно соединяться в одно общее целое, образуя тела шаровидной формы». Аналогичные мысли высказывали и другие ученые. Найденные Ньютоном и Гуком формулы закона тяготения позволили с большой точностью рассчитать орбиты планет и создать первую математическую модель Вселенной. Вопрос о том, существует ли окружающий нас мир сам по себе или он является продуктом деятельности разума (принадлежащего некому высшему существу или каждому конкретному индивиду) составляет суть основного вопроса философии, классически формулируемом в виде дилеммы о первичности материи или сознания. Окружающие нас объекты природы имеют внутреннюю структуру, т.е. в свою очередь сами состоят из других объектов, (яблоко состоит из клеток растительной ткани, которая сложена из молекул, являющихся объединениями атомов и т.д.). При этом естественным образом возникают различные по сложности уровни организации материи: космический, планетарный, геологический, биологический, химический, физический.Влияет или нет распределение всей материи во Вселенной на протекание физических процессов? Существует или нет какая-либо связь между гравитационным взаимодействием и принципом неопределённости? Конечно, в современной физике существуют и другие вопросы, на которые пока нет ответа.Гравитация есть взаимодействие посредством обмена импульсами между разнонаправлено движущимися материальными системами.Особенности гравитационного взаимодействия можно понять, изучая динамику наиболее удобной гравитирующей системы, – планеты Земля, основываясь на единстве законов, действующих в любой области физической реальности. Но необходимо изучать динамику Земли как двухполюсной активной (живой) системы, а не монолитной, пусть и слоисто-симметричной, абстрактной математической модели. Такая полярность сил тяготения обусловлена следующими факторами.Универсальностью сил тяготения в природе. В физической реальности не существует иных взаимодействий, кроме гравитационных.Еще в 1936–1937 годах возможность такого распределения плотности была получена Булленом, но расценена как неприемлемая.Однозначным несоответствием прогнозируемых максимальных давлений в центре Земли существующему минимуму силы тяжести – единственной причине (согласно классической физике) возникновения высоких давлений.Показателями разуплотнения внутренних оболочек могут служить избыток реального экваториального вздутия планеты (70 м) и несоответствие нормальных градиентов силы тяжести, соотносимых с разностью экваториального и полярного радиусов.До настоящего времени не зафиксированы поперечные сейсмические волны, прошедшие сквозь внутреннее ядро.Достаточно известные геофизикам оценки физического состояния вещества ядра по расчетам момента инерции пустотелой и сплошной моделей планеты, и сравнение его с данными анализа динамики системы «Земля – Луна» выполнены некорректно.Хорошо известно, что основная масса Солнечной системы (около 99.8%) приходится на ее единственную звезду – Солнце. Суммарная масса планет составляет только 0.13% от общей. На остальные тела системы (кометы, спутники планет, астероиды и метеоритное вещество) приходится только 0.0003% массы. Из приведенных цифр следует, что законы Кеплера для движения планет в нашей системе должны выполняться очень хорошо.Весьма привлекательная теория совместного происхождения солнца и планет из единого газового облака, сжавшегося под действием гравитационных сил, оказывается в противоречии с наблюдаемым неравномерным распределением вращательного момента (момента импульса) между звездой и планетами.Обсуждаются модели происхождения планет в результате гравитационного захвата Солнцем тел, прилетающих из далекого космоса, эффекты, вызванные взрывом сверхновых. В большинстве «сценариев» развития солнечной системы существование пояса астероидов, так или иначе, связывается с его близким соседством с самой массивной планетой системы.\n"
 //                + "1. Небольшой экскурс в развитии теории гравитацииПервоначально считалось, что Земля неподвижна, а движение небесных тел казалось весьма сложным. Галилей одним из первых высказал предположение о том, что наша планета не является исключением и тоже движется вокруг Солнца. Эта концепция была встречена достаточно враждебно. Тихо Браге решил не принимать участия в дискуссиях, а заняться непосредственными измерениями координат тел на небесной сфере. Позднее данные Тихо попали к Кеплеру, который нашел простое объяснение наблюдаемым сложным траекториям, сформулировав три законов движения планет (и Земли) вокруг Солнца:1. Планеты двигаются по эллиптическим орбитам, в одном из фокусов которых находится Солнце.2. Скорость движения планеты изменяется таким образом, что площади, заметаемые ее радиус-вектором за равные промежутки времени, оказываются равными.3. Периоды обращения планет одной Солнечной системы и большие полуоси их орбит связаны соотношением:Сложное движение планет на «небесной сфере», наблюдаемой с Земли, согласно Кеплеру, возникало вследствие сложения этих планет по эллиптическим орбитам с движением наблюдателя, совершающего вместе с Землей орбитальное движение вокруг солнца и суточное вращение вокруг оси планеты.Прямым доказательством суточного вращения Земли был эксперимент, поставленный Фуко, в котором плоскость колебаний маятника поворачивалась относительно поверхности вращающейся Земли.Законы Кеплера прекрасно описывали наблюдаемое движение планет, но не вскрывали причин, приводящих к такому движению (напр. вполне можно было считать, что причиной движения тел по Кеплеровым орбитам являлась воля какого-либо существа или стремление самих небесных тел к гармонии). Теория гравитации Ньютона указала причину, обусловившую движение космических тел по законам Кеплера, правильно предсказала и объяснила особенности их движения в более сложных случаях, позволила в одних терминах описать многие явления космического и земного масштабов (движение звезд в галактическом скоплении и падение яблока на поверхность Земли).Ньютон нашел правильное выражение для гравитационной силы, возникающей при взаимодействии двух точечных тел (тел, размеры которых малы по сравнению с расстоянием между ними), которое совместно со вторым законом в случае, если масса планеты много меньше массы звезды, приводило к дифференциальному уравнению, допускающему аналитическое решение. Не привлекая каких-либо дополнительных физических идей, чисто математическими методами можно показать, что при соответствующих начальных условиях достаточно малые начальные расстояние до звезды и скорость планеты) космическое тело будет совершать вращение по замкнутой, устойчивой эллиптической орбите в полном согласии с законами Кеплера (в частности второй закон Кеплера является прямым следствием закона сохранения момента импульса, выполняющегося при гравитационных взаимодействиях, поскольку момент силы относительно массивного центра всегда равен нулю). При достаточно высокой начальной скорости (ее значение зависит от массы звезды и начального положения) космическое тело движется по гиперболической траектории, в конце концов, уходя от звезды на бесконечно большое расстояние.Важным свойством закона гравитации является сохранение его математической формы в случае гравитационного взаимодействия неточечных тел в случае сферически-симметричного распределения их масс по объему. При этом роль играет расстояние между центрами этих тел.\n"
@@ -74,14 +78,23 @@ public class Tester {
             log.info("Start create " + indexerEnum);
             os = new FileOutputStream(new File(Creater.getSaveModelFolder(rootFolder), "Create" + ClassifierEnum.getFullNameModel(classifierEnum, indexerEnum) + "Log.txt"));
             Long curTime = System.currentTimeMillis();
-            Creater.createAndSaveIndexer(indexerEnum, rootFolder);
-            String info = "Create time for " + indexerEnum + ": " + ((double) (System.currentTimeMillis() - curTime) / 1000) + " c.\n";
+            String info;
+            try {
+                Creater.createAndSaveIndexer(indexerEnum, rootFolder);
+                info = "Create time for " + indexerEnum + ": " + ((double) (System.currentTimeMillis() - curTime) / 1000) + " c.\n";
+            } catch (SaveModelException ignore) {
+                info = "Сохраненая модель " + indexerEnum + " уже существует\n";
+            }
             log.info(info);
             os.write(info.getBytes(), 0, info.length());
             curTime = System.currentTimeMillis();
             log.info("Start create " + classifierEnum);
-            Creater.createAndSaveWekaClassifier(rootFolder, classifierEnum, indexerEnum);
-            info = "Create time for " + classifierEnum + ": " + ((double) (System.currentTimeMillis() - curTime) / 1000) + " c.";
+            try {
+                Creater.createAndSaveClassifier(rootFolder, classifierEnum, indexerEnum);
+                info = "Create time for " + classifierEnum + ": " + ((double) (System.currentTimeMillis() - curTime) / 1000) + " c.";
+            } catch (SaveModelException ignore) {
+                info = "Сохраненая модель " + classifierEnum + " уже существует\n";
+            }
             log.info(info);
             os.write(info.getBytes(), 0, info.length());
         } catch (IOException e) {
@@ -106,7 +119,7 @@ public class Tester {
             info = "DimensionSize: " + indexer.getDimensionSize();
             log.info(info);
             os.write(info.getBytes(), 0, info.length());
-            WekaClassifier wc = Creater.loadWekaClassifier(rootFolder, classifierEnum, indexerEnum);
+            TextClassifier wc = Creater.loadClassifier(rootFolder, classifierEnum, indexerEnum);
             RusUTF8FileLabelAwareIterator tearchingIteratorTest = new RusUTF8FileLabelAwareIterator.Builder()
                     .addSourceFolder(Creater.getDocForTestFolder(rootFolder))
                     .build();
@@ -123,10 +136,9 @@ public class Tester {
                 System.out.println(count + "/" + size + ": " + topic + " - " + predict);
                 eval.eval(labelsSource.indexOf(predict), labelsSource.indexOf(topic));
             }
-            info = eval.stats(true);
+            info = eval.stats(true) + "\n";
             log.info(info);
             os.write(info.getBytes(), 0, info.length());
-            System.out.println("-\n\n");
             for (String label : labelsSource.getLabels()) {
                 info = label + ": " + eval.f1(labelsSource.indexOf(label)) + "\n";
                 log.info(info);
