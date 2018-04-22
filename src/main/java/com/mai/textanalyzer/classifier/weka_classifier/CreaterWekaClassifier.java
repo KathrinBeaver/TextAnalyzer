@@ -37,9 +37,9 @@ public class CreaterWekaClassifier {
         } else if (classifier == ClassifierEnum.IBK) {
             IBk iBk = new IBk();
             try {
-                iBk.setOptions(new String[]{"-K 5"});
+                iBk.setOptions(new String[]{"-K", "5"});
             } catch (Exception ex) {
-                Logger.getLogger(CreaterWekaClassifier.class.getName()).log(Level.SEVERE, null, ex);
+                throw new RuntimeException(ex);
             }
             abstractClassifier = iBk;
         } else {
