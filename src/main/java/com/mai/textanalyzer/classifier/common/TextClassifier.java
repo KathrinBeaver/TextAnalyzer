@@ -5,6 +5,7 @@
  */
 package com.mai.textanalyzer.classifier.common;
 
+import java.util.List;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 /**
@@ -13,7 +14,9 @@ import org.nd4j.linalg.api.ndarray.INDArray;
  */
 public interface TextClassifier {
 
+    public List<String> getTopicList();
+
     public String classifyMessage(INDArray matrixTextModel);
 
-    public double[] getDistribution(INDArray matrixTextModel);
+    public List<Prediction> getDistribution(INDArray matrixTextModel);
 }

@@ -13,16 +13,21 @@ import com.mai.textanalyzer.indexing.common.IndexerEnum;
  */
 public enum ClassifierEnum {
 
-    NAIVE_BAYES("NaiveBayes", ClassifierTypeEnum.WEKA_CLASSIFIER),
-    SVM("Support Vector Machine", ClassifierTypeEnum.WEKA_CLASSIFIER),
-    IBK("K-nearest neighbours", ClassifierTypeEnum.WEKA_CLASSIFIER);
-
+    NAIVE_BAYES(1, "NaiveBayes", ClassifierTypeEnum.WEKA_CLASSIFIER),
+    SVM(2, "Support Vector Machine", ClassifierTypeEnum.WEKA_CLASSIFIER),
+    IBK(3, "K-nearest neighbours", ClassifierTypeEnum.WEKA_CLASSIFIER);
+    private final int id;
     private final String nameModel;
     private final ClassifierTypeEnum classifierType;
 
-    private ClassifierEnum(String nameModel, ClassifierTypeEnum classifierType) {
+    private ClassifierEnum(int id, String nameModel, ClassifierTypeEnum classifierType) {
+        this.id = id;
         this.nameModel = nameModel;
         this.classifierType = classifierType;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getModelName() {
@@ -35,6 +40,15 @@ public enum ClassifierEnum {
 
     public static String getFullNameModel(ClassifierEnum classifierEnum, IndexerEnum indexerEnum) {
         return classifierEnum.getModelName() + indexerEnum.getModelName();
+    }
+
+    public static ClassifierEnum getClassifierEnumById(int id) {
+        for (ClassifierEnum ce : ClassifierEnum.values()) {
+            if (ce.getId() == id) {
+                return ce;
+            }
+        }
+        return null;
     }
 
 }

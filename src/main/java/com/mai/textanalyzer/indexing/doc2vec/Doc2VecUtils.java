@@ -46,12 +46,13 @@ public class Doc2VecUtils {
                 .minLearningRate(0.001)
                 .layerSize(LAYER_SIZE)
                 .batchSize(1000)
-                .epochs(15)
+                .epochs(12)
                 .stopWords(StopWords.getStopWords())
                 .iterate(iterator)
                 .trainWordVectors(true)
                 .tokenizerFactory(IndexingUtils.getTokenizerFactory())
                 .minWordFrequency(MIN_WORD_FREQUENCY)
+                .allowParallelTokenization(false)
                 //                .limitVocabularySize(LAYER_SIZE) Every 10 million word types need about 1GB of RAM
                 .build();
 

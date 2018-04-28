@@ -34,5 +34,13 @@ public enum IndexerEnum {
     public String getModelName() {
         return modelName;
     }
+    public static IndexerEnum getIndexerEnumById(int id) {
+        for (IndexerEnum ce : IndexerEnum.values()) {
+            if (ce.getId() == id) {
+                return ce;
+            }
+        }
+        return null;
+    }
 
 }

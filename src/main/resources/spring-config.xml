@@ -12,7 +12,9 @@
         http://www.springframework.org/schema/context/spring-context.xsd">
     
     <import resource="datasource.xml"/>
-     
+    
+    <bean id="applicationContext" class="com.mai.textanalyzer.dao.common.ApplicationContextHolder"/> 
+    
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
         <constructor-arg type="javax.sql.DataSource" ref="dataSource"/>
     </bean>   
@@ -21,6 +23,14 @@
         <constructor-arg type="javax.sql.DataSource" ref="dataSource"/>
     </bean>
     
-    <bean id="propertysClassifier" class="com.mai.textanalyzer.dao.classifier.PropertysClassifierDao"
+    <bean id="accuracyDao" class="com.mai.textanalyzer.dao.classifier.AccuracyDao"
           p:jdbcTemplate-ref="jdbcTemplate"/>
+    
+    <bean id="accuracyService" class="com.mai.textanalyzer.dao.classifier.AccuracyService"
+          p:accuracyDao-ref="accuracyDao"/>
+    
+    <bean id="accuracyClassifier" class="com.mai.textanalyzer.classifier.multi_classifier.AccuracyClassifier"
+          p:accuracyService-ref="accuracyService"/>
+    
+   
 </beans>

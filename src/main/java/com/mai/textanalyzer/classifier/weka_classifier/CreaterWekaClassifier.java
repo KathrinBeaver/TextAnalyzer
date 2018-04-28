@@ -37,7 +37,7 @@ public class CreaterWekaClassifier {
         } else if (classifier == ClassifierEnum.IBK) {
             IBk iBk = new IBk();
             try {
-                iBk.setOptions(new String[]{"-K", "5"});
+                iBk.setOptions(new String[]{"-K", "10"});
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }

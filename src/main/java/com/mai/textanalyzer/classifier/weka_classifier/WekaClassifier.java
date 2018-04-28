@@ -5,9 +5,11 @@
  */
 package com.mai.textanalyzer.classifier.weka_classifier;
 
+import com.mai.textanalyzer.classifier.common.Prediction;
 import com.mai.textanalyzer.classifier.common.TextClassifier;
 import com.mai.textanalyzer.indexing.common.BasicTextModel;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -34,9 +36,11 @@ public class WekaClassifier implements Serializable, TextClassifier {
     /* The classifier. */
     private final AbstractClassifier classifier;
 
+    private final List<String> topics;
+
     public WekaClassifier(AbstractClassifier classifier, int iNDArrayLength, List<String> topics) {
         this.classifier = classifier;
-
+        this.topics = topics;
         String nameOfDataset = "classification";
         // Create numeric attributes.
         FastVector attributes = new FastVector(iNDArrayLength + 1);
@@ -134,20 +138,28 @@ public class WekaClassifier implements Serializable, TextClassifier {
     }
 
     @Override
-    public double[] getDistribution(INDArray matrixTextModel) {
+    public List<Prediction> getDistribution(INDArray matrixTextModel) {
         try {
-            // Check if classifier has been built.
             if (data.numInstances() == 0) {
                 return null;
-//            throw new Exception("No classifier available.");
             }
-            // Convert message string into instance.
             Instance instance = makeInstance(matrixTextModel);
-            // Get index of predicted class value.
-            return classifier.distributionForInstance(instance);
+            List<Prediction> predictions = new ArrayList<>();
+            double[] predictValue = classifier.distributionForInstance(instance);
+            int count = 0;
+            for (String topic : topics) {
+                predictions.add(new Prediction(topic, predictValue[count]));
+                count++;
+            }
+            return predictions;
         } catch (Exception ex) {
             Logger.getLogger(WekaClassifier.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
+    }
+
+    @Override
+    public List<String> getTopicList() {
+        return new ArrayList<>(topics);
     }
 }
