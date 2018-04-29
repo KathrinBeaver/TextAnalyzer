@@ -15,7 +15,9 @@ import java.util.List;
  */
 public interface IAccuracyDao {
 
-    public List<Accuracy> getListAccyracy(ClassifierEnum classifierEnum, IndexerEnum indexerEnum);
+    void deleteAllDataFromAccuracy();
 
-    public void inserOrUpdateAccyracy(ClassifierEnum classifierEnum, IndexerEnum indexerEnum, int topic_id, int docCount, double accuracy);
+    List<Accuracy> getListAccuracy(ClassifierEnum classifierEnum, IndexerEnum indexerEnum);
+
+    void inserOrUpdateAccyracy(ClassifierEnum classifierEnum, IndexerEnum indexerEnum, int topic_id, int docCount, double accuracy);
 }

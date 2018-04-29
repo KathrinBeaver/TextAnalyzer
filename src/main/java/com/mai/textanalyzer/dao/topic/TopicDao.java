@@ -8,6 +8,7 @@ package com.mai.textanalyzer.dao.topic;
 import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -31,7 +32,11 @@ public class TopicDao implements ITopicDao {
         String sql = "Select * from CLS.TOPIC where name = :name";
         Map<String, Object> paramМap = new HashMap<>();
         paramМap.put("name", name);
-        return jdbcTemplate.queryForObject(sql, paramМap, rowMapper);
+        try {
+            return jdbcTemplate.queryForObject(sql, paramМap, rowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override
@@ -39,7 +44,11 @@ public class TopicDao implements ITopicDao {
         String sql = "Select * from CLS.TOPIC where TOPIC_ID = :id";
         Map<String, Object> paramМap = new HashMap<>();
         paramМap.put("id", id);
-        return jdbcTemplate.queryForObject(sql, paramМap, rowMapper);
+        try {
+            return jdbcTemplate.queryForObject(sql, paramМap, rowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override

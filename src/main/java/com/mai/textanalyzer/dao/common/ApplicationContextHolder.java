@@ -8,6 +8,7 @@ package com.mai.textanalyzer.dao.common;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  *
@@ -25,4 +26,9 @@ public class ApplicationContextHolder implements ApplicationContextAware {
     public static ApplicationContext getApplicationContext() {
         return applicationContext;
     }
+
+    public static void initializeApplicationContext() {
+        ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
+    }
+
 }

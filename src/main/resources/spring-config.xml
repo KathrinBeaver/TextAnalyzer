@@ -11,6 +11,8 @@
         http://www.springframework.org/schema/context 
         http://www.springframework.org/schema/context/spring-context.xsd">
     
+    <context:annotation-config/>
+    
     <import resource="datasource.xml"/>
     
     <bean id="applicationContext" class="com.mai.textanalyzer.dao.common.ApplicationContextHolder"/> 
@@ -23,14 +25,17 @@
         <constructor-arg type="javax.sql.DataSource" ref="dataSource"/>
     </bean>
     
-    <bean id="accuracyDao" class="com.mai.textanalyzer.dao.classifier.AccuracyDao"
-          p:jdbcTemplate-ref="jdbcTemplate"/>
+    <bean id="accuracyDao" class="com.mai.textanalyzer.dao.accuracy.AccuracyDao"
+          p:jdbcTemplate-ref="namedParameterJdbcTemplate"/>
     
-    <bean id="accuracyService" class="com.mai.textanalyzer.dao.classifier.AccuracyService"
-          p:accuracyDao-ref="accuracyDao"/>
+    <bean id="accuracyService" class="com.mai.textanalyzer.dao.accuracy.AccuracyService"
+          p:accuracyDao-ref="accuracyDao"
+          p:topicService-ref="topicService"/>
     
-    <bean id="accuracyClassifier" class="com.mai.textanalyzer.classifier.multi_classifier.AccuracyClassifier"
-          p:accuracyService-ref="accuracyService"/>
+    <bean id="topicDao" class="com.mai.textanalyzer.dao.topic.TopicDao"
+          p:jdbcTemplate-ref="namedParameterJdbcTemplate"/>
     
+    <bean id="topicService" class="com.mai.textanalyzer.dao.topic.TopicService"
+          p:topicDao-ref="topicDao"/>
    
 </beans>

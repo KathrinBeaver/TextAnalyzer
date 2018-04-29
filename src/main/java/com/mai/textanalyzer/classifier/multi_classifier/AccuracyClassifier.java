@@ -12,6 +12,7 @@ import com.mai.textanalyzer.classifier.common.TextClassifier;
 import com.mai.textanalyzer.creater.Creater;
 import com.mai.textanalyzer.dao.accuracy.Accuracy;
 import com.mai.textanalyzer.dao.accuracy.AccuracyService;
+import com.mai.textanalyzer.dao.common.ApplicationContextHolder;
 import com.mai.textanalyzer.indexing.common.IndexerEnum;
 import java.io.File;
 import java.util.ArrayList;
@@ -30,15 +31,12 @@ public class AccuracyClassifier implements TextClassifier {
     private final TextClassifier classifier;
     private final Map<String, Accuracy> accuracyMap;
 
-    private AccuracyService accuracyService;
-
-    public void setAccuracyService(AccuracyService accuracyService) {
-        this.accuracyService = accuracyService;
-    }
+    private final AccuracyService accuracyService;
 
     public AccuracyClassifier(File rootFolder, ClassifierEnum classifierEnum, IndexerEnum indexerEnum) {
+        this.accuracyService = ApplicationContextHolder.getApplicationContext().getBean(AccuracyService.class);
         this.classifierEnum = classifierEnum;
-        this.accuracyMap = accuracyService.getMapAccyracy(classifierEnum, indexerEnum);
+        this.accuracyMap = accuracyService.getMapAccuracy(classifierEnum, indexerEnum);
         this.classifier = Creater.loadClassifier(rootFolder, classifierEnum, indexerEnum);
     }
 

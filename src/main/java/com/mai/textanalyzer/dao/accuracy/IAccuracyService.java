@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public interface IAccuracyService {
 
-    Map<String, Accuracy> getMapAccyracy(ClassifierEnum classifierEnum, IndexerEnum indexerEnum);
+    Map<String, Accuracy> getMapAccuracy(ClassifierEnum classifierEnum, IndexerEnum indexerEnum);
 
     public void inserOrUpdateAccyracy(Accuracy accuracy);
 

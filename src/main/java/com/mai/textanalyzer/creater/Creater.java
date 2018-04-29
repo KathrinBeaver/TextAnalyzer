@@ -8,6 +8,7 @@ package com.mai.textanalyzer.creater;
 import com.mai.textanalyzer.classifier.common.ClassifierEnum;
 import com.mai.textanalyzer.classifier.common.ClassifierTypeEnum;
 import com.mai.textanalyzer.classifier.common.TextClassifier;
+import com.mai.textanalyzer.classifier.multi_classifier.MultiClassifier;
 import com.mai.textanalyzer.classifier.weka_classifier.CreaterWekaClassifier;
 import com.mai.textanalyzer.classifier.weka_classifier.WekaClassifier;
 import com.mai.textanalyzer.classifier.weka_classifier.WekaUtils;
@@ -116,6 +117,8 @@ public final class Creater {
             WekaClassifier wc = CreaterWekaClassifier.getClassifier(classifier, indexer, rootFolder);
             File folderForSave = new File(getSaveModelFolder(rootFolder), modelName);
             WekaUtils.saveModel(wc, folderForSave);
+        } else if (classifier.getClassifierType() == ClassifierTypeEnum.MYLTI_CLASSIFIER) {
+            //не сохраняется, а собирается из остальных
         } else {
             throw new UnsupportedOperationException("Classifier support for" + classifier.getClassifierType() + " not yet added");
         }
@@ -123,9 +126,12 @@ public final class Creater {
 
     public static TextClassifier loadClassifier(File rootFolder, ClassifierEnum classifier, IndexerEnum indexingEnum) {
         String modelName = ClassifierEnum.getFullNameModel(classifier, indexingEnum);
-        checkRootFolderStracture(rootFolder, modelName, false);
         if (classifier.getClassifierType() == ClassifierTypeEnum.WEKA_CLASSIFIER) {
+            checkRootFolderStracture(rootFolder, modelName, false);
             return WekaUtils.loadModel(new File(getSaveModelFolder(rootFolder), modelName));
+        } else if (classifier.getClassifierType() == ClassifierTypeEnum.MYLTI_CLASSIFIER) {
+            checkRootFolderStracture(rootFolder, modelName, null);
+            return new MultiClassifier(rootFolder);
         } else {
             throw new UnsupportedOperationException("UnsupportedOperation");
         }
@@ -136,9 +142,10 @@ public final class Creater {
      *
      * @param rootFolder
      * @param modelName
-     * @param forSave true - if save model, false - if load model
+     * @param forSave true - if save model, false - if load model, if null -
+     * dont check presence model
      */
-    private static void checkRootFolderStracture(File rootFolder, String modelName, boolean forSave) {
+    private static void checkRootFolderStracture(File rootFolder, String modelName, Boolean forSave) {
         File checkingFile = getDocForLearningFolder(rootFolder);
         if (!checkingFile.exists() || !checkingFile.isDirectory()) {
             throw new RuntimeException("Не удалось найти: " + checkingFile.getPath());
@@ -152,10 +159,12 @@ public final class Creater {
             throw new RuntimeException("Не удалось найти: " + checkingFile.getPath());
         }
         File saveModel = new File(checkingFile, modelName);
-        if (forSave && saveModel.exists()) {
-            throw new SaveModelException("Уже существует сохраненая модель: " + saveModel.getPath());
-        } else if (!forSave && !saveModel.exists()) {
-            throw new SaveModelException("Модель " + saveModel.getPath() + "для загруки не найдена");
+        if (forSave != null) {
+            if (forSave && saveModel.exists()) {
+                throw new SaveModelException("Уже существует сохраненая модель: " + saveModel.getPath());
+            } else if (!forSave && !saveModel.exists()) {
+                throw new SaveModelException("Модель " + saveModel.getPath() + "для загруки не найдена");
+            }
         }
     }
 

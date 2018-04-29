@@ -24,18 +24,20 @@ public class AccuracyService implements IAccuracyService {
 
     @Required
     public void setAccuracyDao(IAccuracyDao accuracyDao) {
+        System.out.println("setAccuracy");
         this.accuracyDao = accuracyDao;
     }
 
     @Required
     public void setTopicService(ITopicService topicService) {
+        System.out.println("setTopicService");
         this.topicService = topicService;
     }
 
     @Override
-    public Map<String, Accuracy> getMapAccyracy(ClassifierEnum classifierEnum, IndexerEnum indexerEnum) {
+    public Map<String, Accuracy> getMapAccuracy(ClassifierEnum classifierEnum, IndexerEnum indexerEnum) {
         Map<String, Accuracy> map = new HashMap<>();
-        for (Accuracy accuracy : accuracyDao.getListAccyracy(classifierEnum, indexerEnum)) {
+        for (Accuracy accuracy : accuracyDao.getListAccuracy(classifierEnum, indexerEnum)) {
             map.put(accuracy.getTopic(), accuracy);
         }
         return map;

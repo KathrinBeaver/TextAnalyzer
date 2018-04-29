@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 /**
@@ -28,20 +29,26 @@ public class AccuracyDao implements IAccuracyDao {
     }
 
     @Override
-    public List<Accuracy> getListAccyracy(ClassifierEnum classifierEnum, IndexerEnum indexerEnum) {
+    public void deleteAllDataFromAccuracy() {
+        String sql = "DELETE FROM cls.accuracy";
+        jdbcTemplate.update(sql, new MapSqlParameterSource());
+    }
+
+    @Override
+    public List<Accuracy> getListAccuracy(ClassifierEnum classifierEnum, IndexerEnum indexerEnum) {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT ACC.* ,TPK.NAME as NAME_TOPIC  FROM ( ")
                 .append("SELECT * FROM CLS.ACCURACY WHERE ")
-                .append(" VECTORIZATION_ID = :vectorization_id")
-                .append(" AND CLASSIFIER_ID = :classifier_id")
+                .append(" VECTORIZATION_ID = :vectorization_id ")
+                .append(" AND CLASSIFIER_ID = :classifier_id ) ACC ")
                 .append(" LEFT OUTER JOIN CLS.TOPIC as TPK ON TPK.TOPIC_ID=ACC.TOPIC_ID ");
         Map<String, Object> paramМap = new HashMap<>();
-        paramМap.put("vectorization_id", classifierEnum.getId());
-        paramМap.put("classifier_id", indexerEnum.getId());
+        paramМap.put("classifier_id", classifierEnum.getId());
+        paramМap.put("vectorization_id", indexerEnum.getId());
         List<Accuracy> accuracys = jdbcTemplate.query(sql.toString(), paramМap, new RowMapper<Accuracy>() {
             @Override
             public Accuracy mapRow(ResultSet rs, int i) throws SQLException {
-                return new Accuracy(ClassifierEnum.getClassifierEnumById(rs.getInt("CLASSIFIER_ID")), IndexerEnum.getIndexerEnumById(rs.getInt("VECTORIZATION_ID")), rs.getString("NAME_TOPIC"), rs.getDouble("ACCYRACY"), rs.getInt("DOC_COUNT"));
+                return new Accuracy(ClassifierEnum.getClassifierEnumById(rs.getInt("CLASSIFIER_ID")), IndexerEnum.getIndexerEnumById(rs.getInt("VECTORIZATION_ID")), rs.getString("NAME_TOPIC"), rs.getDouble("ACCURACY"), rs.getInt("DOC_COUNT"));
             }
         });
         return accuracys;
@@ -55,14 +62,16 @@ public class AccuracyDao implements IAccuracyDao {
                 .append(" VALUES ")
                 .append(" (:topic_id,:vectorization_id,:classifier_id,:doc_count,:accuracy) ")
                 .append(" ON DUPLICATE KEY UPDATE ")
-                .append(" DOC_COUNT = :doc_count ")
-                .append(" ,ACCURACY = :accuracy");
+                .append(" DOC_COUNT = :doc_count2 ")
+                .append(" ,ACCURACY = :accuracy2 ");
         Map<String, Object> paramМap = new HashMap<>();
         paramМap.put("topic_id", topic_id);
         paramМap.put("vectorization_id", indexerEnum.getId());
         paramМap.put("classifier_id", classifierEnum.getId());
         paramМap.put("doc_count", docCount);
         paramМap.put("accuracy", accuracy);
+        paramМap.put("doc_count2", docCount);
+        paramМap.put("accuracy2", accuracy);
         jdbcTemplate.update(sql.toString(), paramМap);
     }
 

@@ -15,7 +15,8 @@ public enum ClassifierEnum {
 
     NAIVE_BAYES(1, "NaiveBayes", ClassifierTypeEnum.WEKA_CLASSIFIER),
     SVM(2, "Support Vector Machine", ClassifierTypeEnum.WEKA_CLASSIFIER),
-    IBK(3, "K-nearest neighbours", ClassifierTypeEnum.WEKA_CLASSIFIER);
+    IBK(3, "K-nearest neighbours", ClassifierTypeEnum.WEKA_CLASSIFIER),
+    MYLTI_CLASSIFIER(7, "MultiClassifier", ClassifierTypeEnum.MYLTI_CLASSIFIER);
     private final int id;
     private final String nameModel;
     private final ClassifierTypeEnum classifierType;
