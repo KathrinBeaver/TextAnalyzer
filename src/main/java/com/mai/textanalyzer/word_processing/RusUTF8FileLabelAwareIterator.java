@@ -10,7 +10,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.NonNull;
 import org.deeplearning4j.text.documentiterator.LabelAwareIterator;
@@ -28,22 +30,32 @@ public class RusUTF8FileLabelAwareIterator implements LabelAwareIterator {
     protected List<File> files;
     protected AtomicInteger position = new AtomicInteger(0);
     protected LabelsSource labelsSource;
+    private final Map<String, Integer> domentsSizeMap;
 
     /*
         Please keep this method protected, it's used in tests
      */
     protected RusUTF8FileLabelAwareIterator() {
-
+        domentsSizeMap = new HashMap<>();
     }
 
-    protected RusUTF8FileLabelAwareIterator(@NonNull List<File> files, @NonNull LabelsSource source) {
+    protected RusUTF8FileLabelAwareIterator(@NonNull List<File> files, @NonNull LabelsSource source, Map<String, Integer> domentsSizeMap) {
         this.files = files;
         this.labelsSource = source;
+        this.domentsSizeMap = domentsSizeMap;
     }
 
     @Override
     public boolean hasNextDocument() {
         return position.get() < files.size();
+    }
+
+    public int getDocumentsSize(String topic) {
+        Integer size = domentsSizeMap.get(topic);
+        if (size != null) {
+            return size;
+        }
+        return 0;
     }
 
     @Override
@@ -135,6 +147,7 @@ public class RusUTF8FileLabelAwareIterator implements LabelAwareIterator {
             // search for all files in all folders provided
             List<File> fileList = new ArrayList<>();
             List<String> labels = new ArrayList<>();
+            Map<String, Integer> domentsSizeMap = new HashMap<>();
 
             for (File file : foldersToScan) {
                 if (!file.isDirectory()) {
@@ -160,6 +173,8 @@ public class RusUTF8FileLabelAwareIterator implements LabelAwareIterator {
                         continue;
                     }
 
+                    domentsSizeMap.put(fileLabel.getName(), docs.length);
+
                     for (File fileDoc : docs) {
                         if (!fileDoc.isDirectory()) {
                             fileList.add(fileDoc);
@@ -168,7 +183,7 @@ public class RusUTF8FileLabelAwareIterator implements LabelAwareIterator {
                 }
             }
             LabelsSource source = new LabelsSource(labels);
-            RusUTF8FileLabelAwareIterator iterator = new RusUTF8FileLabelAwareIterator(fileList, source);
+            RusUTF8FileLabelAwareIterator iterator = new RusUTF8FileLabelAwareIterator(fileList, source, domentsSizeMap);
 
             return iterator;
         }

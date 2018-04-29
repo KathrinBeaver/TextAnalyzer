@@ -48,7 +48,7 @@ public class AccuracyDao implements IAccuracyDao {
     }
 
     @Override
-    public void inserOrUpdateAccyracy(Accuracy accuracy) {
+    public void inserOrUpdateAccyracy(ClassifierEnum classifierEnum, IndexerEnum indexerEnum, int topic_id, int docCount, double accuracy) {
         StringBuilder sql = new StringBuilder();
         sql.append(" INSERT INTO CLS.ACCURACY ")
                 .append(" (TOPIC_ID,VECTORIZATION_ID,CLASSIFIER_ID,DOC_COUNT,ACCURACY) ")
@@ -58,11 +58,11 @@ public class AccuracyDao implements IAccuracyDao {
                 .append(" DOC_COUNT = :doc_count ")
                 .append(" ,ACCURACY = :accuracy");
         Map<String, Object> paramМap = new HashMap<>();
-        paramМap.put("topic_id", accuracy.getTopic());
-        paramМap.put("vectorization_id", accuracy.getIndexerEnum().getId());
-        paramМap.put("classifier_id", accuracy.getClassifierEnum().getId());
-        paramМap.put("doc_count", accuracy.getDocCount());
-        paramМap.put("accuracy", accuracy.getAccuracy());
+        paramМap.put("topic_id", topic_id);
+        paramМap.put("vectorization_id", indexerEnum.getId());
+        paramМap.put("classifier_id", classifierEnum.getId());
+        paramМap.put("doc_count", docCount);
+        paramМap.put("accuracy", accuracy);
         jdbcTemplate.update(sql.toString(), paramМap);
     }
 

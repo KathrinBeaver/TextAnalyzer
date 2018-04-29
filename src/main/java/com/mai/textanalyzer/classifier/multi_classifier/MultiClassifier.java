@@ -14,6 +14,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -29,11 +30,25 @@ public class MultiClassifier implements TextClassifier {
 
     public MultiClassifier(File rootDir) {
         classifierList.add(new AccuracyClassifier(rootDir, ClassifierEnum.NAIVE_BAYES, INDEXER_ENUM));
+        classifierList.add(new AccuracyClassifier(rootDir, ClassifierEnum.IBK, INDEXER_ENUM));
+        classifierList.add(new AccuracyClassifier(rootDir, ClassifierEnum.SVM, INDEXER_ENUM));
     }
 
     @Override
     public String classifyMessage(INDArray matrixTextModel) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Prediction> predictions = normalizePredicition(calcPredicition(matrixTextModel));
+        if (predictions.isEmpty()) {
+            return null;
+        }
+        Iterator<Prediction> it = predictions.iterator();
+        Prediction maxAccuracyPrediction = it.next();
+        while (it.hasNext()) {
+            Prediction nextPrediction = it.next();
+            if (nextPrediction.getValue() > maxAccuracyPrediction.getValue()) {
+                maxAccuracyPrediction = nextPrediction;
+            }
+        }
+        return maxAccuracyPrediction.getTopic();
     }
 
     @Override

@@ -39,7 +39,7 @@ public class AccuracyClassifier implements TextClassifier {
     public AccuracyClassifier(File rootFolder, ClassifierEnum classifierEnum, IndexerEnum indexerEnum) {
         this.classifierEnum = classifierEnum;
         this.accuracyMap = accuracyService.getMapAccyracy(classifierEnum, indexerEnum);
-        classifier = Creater.loadClassifier(rootFolder, classifierEnum, indexerEnum);
+        this.classifier = Creater.loadClassifier(rootFolder, classifierEnum, indexerEnum);
     }
 
     public ClassifierEnum getClassifierEnum() {

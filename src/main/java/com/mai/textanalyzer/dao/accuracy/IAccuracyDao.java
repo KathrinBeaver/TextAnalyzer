@@ -17,5 +17,5 @@ public interface IAccuracyDao {
 
     public List<Accuracy> getListAccyracy(ClassifierEnum classifierEnum, IndexerEnum indexerEnum);
 
-    public void inserOrUpdateAccyracy(Accuracy accuracy);
+    public void inserOrUpdateAccyracy(ClassifierEnum classifierEnum, IndexerEnum indexerEnum, int topic_id, int docCount, double accuracy);
 }

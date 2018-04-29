@@ -11,7 +11,7 @@ package com.mai.textanalyzer.dao.topic;
  */
 public interface ITopicService {
 
-    Topic getOrInserteAndGetTopicByName(String name);
+    int getOrInserteAndGetTopicByName(String name);
 
     Topic getTopicByName(String name);
 

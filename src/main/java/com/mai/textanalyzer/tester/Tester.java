@@ -21,6 +21,11 @@ import org.deeplearning4j.text.documentiterator.LabelledDocument;
 import org.deeplearning4j.text.documentiterator.LabelsSource;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import com.mai.textanalyzer.creater.SaveModelException;
+import com.mai.textanalyzer.dao.accuracy.Accuracy;
+import com.mai.textanalyzer.dao.accuracy.IAccuracyService;
+import com.mai.textanalyzer.dao.common.ApplicationContextHolder;
+import com.mai.textanalyzer.dao.topic.ITopicService;
+import org.springframework.context.ApplicationContext;
 
 /**
  *
@@ -41,10 +46,10 @@ public class Tester {
 //        System.out.println(classifierDao.getInfo());
         File rootFolder = new File("E:\\DataForClassifier\\RootFolderSize62407");
         createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.NAIVE_BAYES);
-        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.NAIVE_BAYES);
+        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.NAIVE_BAYES, true);
 
         createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.IBK);
-        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.IBK);
+        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.IBK, true);
 
 //        TextClassifier classifier = loadClassifier(rootFolder, ClassifierEnum.NAIVE_BAYES, DOC2VEC);
 //        
@@ -102,7 +107,7 @@ public class Tester {
         }
     }
 
-    private static void testModel(File rootFolder, IndexerEnum indexerEnum, ClassifierEnum classifierEnum) {
+    private static void testModel(File rootFolder, IndexerEnum indexerEnum, ClassifierEnum classifierEnum, boolean updateInfoInDB) {
         OutputStream os = null;
         try {
             os = new FileOutputStream(new File(Creater.getSaveModelFolder(rootFolder), ClassifierEnum.getFullNameModel(classifierEnum, indexerEnum) + "Log.txt"));
@@ -114,15 +119,15 @@ public class Tester {
             log.info(info);
             os.write(info.getBytes(), 0, info.length());
             TextClassifier wc = Creater.loadClassifier(rootFolder, classifierEnum, indexerEnum);
-            RusUTF8FileLabelAwareIterator tearchingIteratorTest = new RusUTF8FileLabelAwareIterator.Builder()
+            RusUTF8FileLabelAwareIterator testingIteratorTest = new RusUTF8FileLabelAwareIterator.Builder()
                     .addSourceFolder(Creater.getDocForTestFolder(rootFolder))
                     .build();
-            LabelsSource labelsSource = tearchingIteratorTest.getLabelsSource();
-            int size = tearchingIteratorTest.getSize();
+            LabelsSource labelsSource = testingIteratorTest.getLabelsSource();
+            int size = testingIteratorTest.getSize();
             Evaluation eval = new Evaluation(labelsSource.size());
             int count = 0;
-            while (tearchingIteratorTest.hasNext()) {
-                LabelledDocument next = tearchingIteratorTest.next();
+            while (testingIteratorTest.hasNext()) {
+                LabelledDocument next = testingIteratorTest.next();
                 INDArray matrixTextModel = indexer.getIndex(next.getContent());
                 String predict = wc.classifyMessage(matrixTextModel);
                 String topic = next.getLabel();
@@ -133,8 +138,21 @@ public class Tester {
             info = eval.stats(true) + "\n";
             log.info(info);
             os.write(info.getBytes(), 0, info.length());
+
+            RusUTF8FileLabelAwareIterator learningIteratorTest = null;
+            if (updateInfoInDB) {
+                learningIteratorTest = new RusUTF8FileLabelAwareIterator.Builder()
+                        .addSourceFolder(Creater.getDocForLearningFolder(rootFolder))
+                        .build();
+            }
             for (String label : labelsSource.getLabels()) {
-                info = label + ": " + eval.f1(labelsSource.indexOf(label)) + "\n";
+                double accuracy = eval.f1(labelsSource.indexOf(label));
+                if (updateInfoInDB) {
+                    ApplicationContext applicationContext = ApplicationContextHolder.getApplicationContext();
+                    IAccuracyService accuracyService = applicationContext.getBean(IAccuracyService.class);
+                    accuracyService.inserOrUpdateAccyracy(new Accuracy(classifierEnum, indexerEnum, label, accuracy, learningIteratorTest.getDocumentsSize(label)));
+                }
+                info = label + ": " + accuracy + "\n";
                 log.info(info);
                 os.write(info.getBytes(), 0, info.length());
             }

@@ -18,12 +18,12 @@ public class TopicService implements ITopicService {
     }
 
     @Override
-    public Topic getOrInserteAndGetTopicByName(String name) {
+    public int getOrInserteAndGetTopicByName(String name) {
         Topic topic = topicDao.getTopicByName(name);
         if (topic != null) {
-            return topic;
+            return topic.getId();
         }
-        return topicDao.getTopicByID(topicDao.insertTopic(name));
+        return topicDao.insertTopic(name);
     }
 
     @Override
