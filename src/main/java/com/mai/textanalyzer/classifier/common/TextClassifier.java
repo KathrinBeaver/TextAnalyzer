@@ -14,9 +14,11 @@ import org.nd4j.linalg.api.ndarray.INDArray;
  */
 public interface TextClassifier {
 
-    public List<String> getTopicList();
+    ClassifierEnum getClassifierEnum();
 
-    public String classifyMessage(INDArray matrixTextModel);
+    List<String> getTopicList();
 
-    public List<Prediction> getDistribution(INDArray matrixTextModel);
+    String classifyMessage(INDArray matrixTextModel);
+
+    List<Prediction> getDistribution(INDArray matrixTextModel);
 }

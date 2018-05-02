@@ -5,20 +5,18 @@
  */
 package com.mai.textanalyzer.classifier.weka_classifier;
 
+import com.mai.textanalyzer.classifier.common.ClassifierEnum;
 import com.mai.textanalyzer.classifier.common.Prediction;
 import com.mai.textanalyzer.classifier.common.TextClassifier;
 import com.mai.textanalyzer.indexing.common.BasicTextModel;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.nd4j.linalg.api.iter.NdIndexIterator;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import weka.classifiers.AbstractClassifier;
-import weka.classifiers.Classifier;
-import weka.classifiers.lazy.IBk;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
@@ -38,7 +36,10 @@ public class WekaClassifier implements Serializable, TextClassifier {
 
     private final List<String> topics;
 
-    public WekaClassifier(AbstractClassifier classifier, int iNDArrayLength, List<String> topics) {
+    private final ClassifierEnum classifierEnum;
+
+    public WekaClassifier(ClassifierEnum classifierEnum, AbstractClassifier classifier, int iNDArrayLength, List<String> topics) {
+        this.classifierEnum = classifierEnum;
         this.classifier = classifier;
         this.topics = topics;
         String nameOfDataset = "classification";
@@ -161,5 +162,10 @@ public class WekaClassifier implements Serializable, TextClassifier {
     @Override
     public List<String> getTopicList() {
         return new ArrayList<>(topics);
+    }
+
+    @Override
+    public ClassifierEnum getClassifierEnum() {
+        return classifierEnum;
     }
 }

@@ -8,6 +8,7 @@ package com.mai.textanalyzer.indexing.doc2vec;
 import com.mai.textanalyzer.indexing.common.Indexer;
 import org.deeplearning4j.models.paragraphvectors.ParagraphVectors;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.exception.ND4JIllegalStateException;
 
 /**
  *
@@ -28,7 +29,11 @@ public class Doc2Vec implements Indexer {
 
     @Override
     public INDArray getIndex(String text) {
-        return paragraphVectors.inferVector(text);
+        try {
+            return paragraphVectors.inferVector(text);
+        } catch (ND4JIllegalStateException notEnoughtInfoEx) {
+            return null;
+        }
     }
 
     @Override

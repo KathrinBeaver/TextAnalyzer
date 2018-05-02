@@ -5,7 +5,6 @@
  */
 package com.mai.textanalyzer.classifier.weka_classifier;
 
-import com.mai.textanalyzer.creater.*;
 import com.mai.textanalyzer.classifier.common.ClassifierEnum;
 import static com.mai.textanalyzer.creater.Creater.getDocForLearningFolder;
 import com.mai.textanalyzer.indexing.common.BasicTextModel;
@@ -14,13 +13,13 @@ import com.mai.textanalyzer.indexing.common.IndexingUtils;
 import com.mai.textanalyzer.word_processing.RusUTF8FileLabelAwareIterator;
 import java.io.File;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.deeplearning4j.text.documentiterator.LabelledDocument;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.functions.Logistic;
 import weka.classifiers.functions.SMO;
 import weka.classifiers.lazy.IBk;
+import weka.classifiers.trees.RandomForest;
 
 /**
  *
@@ -42,13 +41,17 @@ public class CreaterWekaClassifier {
                 throw new RuntimeException(ex);
             }
             abstractClassifier = iBk;
+        } else if (classifier == ClassifierEnum.LR) {
+            abstractClassifier = new Logistic();
+        } else if (classifier == ClassifierEnum.RF) {
+            abstractClassifier = new RandomForest();
         } else {
             throw new UnsupportedOperationException("Classifier support for" + classifier.name() + " not yet added");
         }
         File folderWithDataForLearning = getDocForLearningFolder(rootFolder);
         List<String> topics = IndexingUtils.getTopics(folderWithDataForLearning);
 
-        WekaClassifier wc = new WekaClassifier(abstractClassifier, indexer.getDimensionSize(), topics);
+        WekaClassifier wc = new WekaClassifier(classifier, abstractClassifier, indexer.getDimensionSize(), topics);
         RusUTF8FileLabelAwareIterator tearchingIterator = new RusUTF8FileLabelAwareIterator.Builder()
                 .addSourceFolder(folderWithDataForLearning)
                 .build();

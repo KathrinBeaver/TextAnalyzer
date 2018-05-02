@@ -24,13 +24,11 @@ public class AccuracyService implements IAccuracyService {
 
     @Required
     public void setAccuracyDao(IAccuracyDao accuracyDao) {
-        System.out.println("setAccuracy");
         this.accuracyDao = accuracyDao;
     }
 
     @Required
     public void setTopicService(ITopicService topicService) {
-        System.out.println("setTopicService");
         this.topicService = topicService;
     }
 

@@ -40,6 +40,7 @@ public class AccuracyClassifier implements TextClassifier {
         this.classifier = Creater.loadClassifier(rootFolder, classifierEnum, indexerEnum);
     }
 
+    @Override
     public ClassifierEnum getClassifierEnum() {
         return classifierEnum;
     }

@@ -47,11 +47,15 @@ public class Tester {
 
         createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.IBK);
         testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.IBK, true);
-
         createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.SVM);
         testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.SVM, true);
+        createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.LR);
+        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.LR, true);
 
-        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.MYLTI_CLASSIFIER, false);
+        createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.RF);
+        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.RF, true);
+
+//        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.MYLTI_CLASSIFIER, false);
     }
 
     private static void createModel(File rootFolder, IndexerEnum indexerEnum, ClassifierEnum classifierEnum) {

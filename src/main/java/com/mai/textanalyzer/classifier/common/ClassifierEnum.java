@@ -13,10 +13,12 @@ import com.mai.textanalyzer.indexing.common.IndexerEnum;
  */
 public enum ClassifierEnum {
 
-    NAIVE_BAYES(1, "NaiveBayes", ClassifierTypeEnum.WEKA_CLASSIFIER),
+    NAIVE_BAYES(1, "Naive Bayes", ClassifierTypeEnum.WEKA_CLASSIFIER),
     SVM(2, "Support Vector Machine", ClassifierTypeEnum.WEKA_CLASSIFIER),
-    IBK(3, "K-nearest neighbours", ClassifierTypeEnum.WEKA_CLASSIFIER),
-    MYLTI_CLASSIFIER(7, "MultiClassifier", ClassifierTypeEnum.MYLTI_CLASSIFIER);
+    IBK(3, "K-nearest Neighbours", ClassifierTypeEnum.WEKA_CLASSIFIER),
+    LR(4, "Logistic Regression", ClassifierTypeEnum.WEKA_CLASSIFIER),
+    RF(5, "Random Forest", ClassifierTypeEnum.WEKA_CLASSIFIER),
+    MYLTI_CLASSIFIER(7, "Multi Classifier", ClassifierTypeEnum.MYLTI_CLASSIFIER);
     private final int id;
     private final String nameModel;
     private final ClassifierTypeEnum classifierType;
@@ -50,6 +52,11 @@ public enum ClassifierEnum {
             }
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return nameModel;
     }
 
 }

@@ -11,7 +11,7 @@ import java.util.Objects;
  *
  * @author Sergey
  */
-public class Prediction {
+public class Prediction implements Comparable<Prediction> {
 
     private final String topic;
     private double value;
@@ -60,6 +60,11 @@ public class Prediction {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int compareTo(Prediction t) {
+        return (int) (value - t.value);
     }
 
 }

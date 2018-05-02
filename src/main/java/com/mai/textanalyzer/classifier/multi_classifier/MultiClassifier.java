@@ -32,6 +32,8 @@ public class MultiClassifier implements TextClassifier {
         classifierList.add(new AccuracyClassifier(rootDir, ClassifierEnum.NAIVE_BAYES, INDEXER_ENUM));
         classifierList.add(new AccuracyClassifier(rootDir, ClassifierEnum.IBK, INDEXER_ENUM));
         classifierList.add(new AccuracyClassifier(rootDir, ClassifierEnum.SVM, INDEXER_ENUM));
+        classifierList.add(new AccuracyClassifier(rootDir, ClassifierEnum.LR, INDEXER_ENUM));
+        classifierList.add(new AccuracyClassifier(rootDir, ClassifierEnum.RF, INDEXER_ENUM));
     }
 
     @Override
@@ -72,25 +74,28 @@ public class MultiClassifier implements TextClassifier {
             });
         });
         List<AccuracyPredicion> accuracyPredicions = new ArrayList<>(accuracyMap.values());
-        Collections.sort(accuracyPredicions);
         return accuracyPredicions;
     }
 
     private List<Prediction> normalizePredicition(List<AccuracyPredicion> accuracyPredicions) {
-        double percent = 0;
+        double allAccuracy = 0;
         for (AccuracyPredicion ap : accuracyPredicions) {
-            percent += calcFactorAcc(ap);
+            allAccuracy += calcFactorAcc(ap);
         }
-        percent = percent / 100;//значение для одного процента
         List<Prediction> resultList = new ArrayList<>();
         for (AccuracyPredicion ap : accuracyPredicions) {
-            resultList.add(new Prediction(ap.getTopic(), calcFactorAcc(ap) / percent));
+            resultList.add(new Prediction(ap.getTopic(), calcFactorAcc(ap) / allAccuracy));
         }
         return resultList;
     }
 
     private double calcFactorAcc(AccuracyPredicion ap) {
         return ap.getAccuracy() * ap.getValue();
+    }
+
+    @Override
+    public ClassifierEnum getClassifierEnum() {
+        return ClassifierEnum.MYLTI_CLASSIFIER;
     }
 
 }

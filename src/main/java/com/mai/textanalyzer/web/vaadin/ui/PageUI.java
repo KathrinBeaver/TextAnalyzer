@@ -14,6 +14,7 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 /**
@@ -37,18 +38,14 @@ public class PageUI extends AbstractAnalyzerUI {
     protected void init(VaadinRequest request) {
         super.init(request);
         initComponents();
-//        String redirectPrefix = SystemUtils.getContextPath() + "/" + URL_PREFIX + "#!";
-//        UI.getCurrent().getPage().setLocation(redirectPrefix + PageUI.DEFAULT_VIEW);
+        MainViewComponent.navigateToView();
+//        UI.getCurrent().getPage().setLocation(SystemUtils.getContextPath() + "/" + URL_PREFIX + "#!" + PageUI.DEFAULT_VIEW);
     }
 
     private void initComponents() {
         navigator = new Navigator(this, this);
 //        navigator.setErrorView(new PageNotFoundViewComponent());
 
-//        User user = SystemUtils.getUserFromVaadinSession();
-//        if (user == null) {
-//            return;
-//        }
         navigator.addView(MainViewComponent.VIEW_NAME, new MainViewComponent());
         navigator.addViewChangeListener(new ViewChangeListener() {
             @Override

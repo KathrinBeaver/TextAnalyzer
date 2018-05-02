@@ -58,7 +58,7 @@ public final class Creater {
 
     private static Indexer createAndSaveDoc2Vec(File rootFolder) {
         String modelName = DOC2VEC.getModelName();
-        checkRootFolderStracture(rootFolder, modelName, true);
+        checkRootFolderStructure(rootFolder, modelName, true);
         File folderWithDataForLearning = getDocForLearningFolder(rootFolder);
         File folderForSave = new File(getSaveModelFolder(rootFolder), modelName);
         Doc2Vec doc2Vec = Doc2VecUtils.createModel(folderWithDataForLearning);
@@ -68,7 +68,7 @@ public final class Creater {
 
     private static Indexer createAndSaveTfIIdf(File rootFolder) {
         String modelName = TF_IDF.getModelName();
-        checkRootFolderStracture(rootFolder, modelName, true);
+        checkRootFolderStructure(rootFolder, modelName, true);
         File folderWithDataForLearning = getDocForLearningFolder(rootFolder);
         File folderForSave = new File(getSaveModelFolder(rootFolder), modelName);
         TfIdf tfIdf = TfIIdfUtils.createModel(folderWithDataForLearning);
@@ -87,13 +87,13 @@ public final class Creater {
 
     private static Indexer loadDoc2Vec(File rootFolder) {
         String modelName = DOC2VEC.getModelName();
-        checkRootFolderStracture(rootFolder, modelName, false);
+        checkRootFolderStructure(rootFolder, modelName, false);
         return Doc2VecUtils.loadModel(new File(getSaveModelFolder(rootFolder), modelName));
     }
 
     private static Indexer loadTfIIdf(File rootFolder) {
         String modelName = TF_IDF.getModelName();
-        checkRootFolderStracture(rootFolder, modelName, false);
+        checkRootFolderStructure(rootFolder, modelName, false);
         File folderWithDataForLearning = getDocForLearningFolder(rootFolder);
         File folderForSave = new File(getSaveModelFolder(rootFolder), modelName);
         return TfIIdfUtils.loadModel(folderForSave, folderWithDataForLearning);
@@ -111,7 +111,7 @@ public final class Creater {
 
     public static void createAndSaveClassifier(File rootFolder, ClassifierEnum classifier, IndexerEnum indexingEnum) {
         String modelName = ClassifierEnum.getFullNameModel(classifier, indexingEnum);
-        checkRootFolderStracture(rootFolder, modelName, true);
+        checkRootFolderStructure(rootFolder, modelName, true);
         Indexer indexer = loadIndexer(indexingEnum, rootFolder);
         if (classifier.getClassifierType() == ClassifierTypeEnum.WEKA_CLASSIFIER) {
             WekaClassifier wc = CreaterWekaClassifier.getClassifier(classifier, indexer, rootFolder);
@@ -127,10 +127,10 @@ public final class Creater {
     public static TextClassifier loadClassifier(File rootFolder, ClassifierEnum classifier, IndexerEnum indexingEnum) {
         String modelName = ClassifierEnum.getFullNameModel(classifier, indexingEnum);
         if (classifier.getClassifierType() == ClassifierTypeEnum.WEKA_CLASSIFIER) {
-            checkRootFolderStracture(rootFolder, modelName, false);
+            checkRootFolderStructure(rootFolder, modelName, false);
             return WekaUtils.loadModel(new File(getSaveModelFolder(rootFolder), modelName));
         } else if (classifier.getClassifierType() == ClassifierTypeEnum.MYLTI_CLASSIFIER) {
-            checkRootFolderStracture(rootFolder, modelName, null);
+            checkRootFolderStructure(rootFolder, modelName, null);
             return new MultiClassifier(rootFolder);
         } else {
             throw new UnsupportedOperationException("UnsupportedOperation");
@@ -145,7 +145,7 @@ public final class Creater {
      * @param forSave true - if save model, false - if load model, if null -
      * dont check presence model
      */
-    private static void checkRootFolderStracture(File rootFolder, String modelName, Boolean forSave) {
+    public static void checkRootFolderStructure(File rootFolder, String modelName, Boolean forSave) {
         File checkingFile = getDocForLearningFolder(rootFolder);
         if (!checkingFile.exists() || !checkingFile.isDirectory()) {
             throw new RuntimeException("Не удалось найти: " + checkingFile.getPath());
@@ -158,14 +158,31 @@ public final class Creater {
         if (!checkingFile.exists() || !checkingFile.isDirectory()) {
             throw new RuntimeException("Не удалось найти: " + checkingFile.getPath());
         }
-        File saveModel = new File(checkingFile, modelName);
         if (forSave != null) {
+            File saveModel = new File(checkingFile, modelName);
             if (forSave && saveModel.exists()) {
                 throw new SaveModelException("Уже существует сохраненая модель: " + saveModel.getPath());
             } else if (!forSave && !saveModel.exists()) {
                 throw new SaveModelException("Модель " + saveModel.getPath() + "для загруки не найдена");
             }
         }
+    }
+
+    public static boolean checkExistIndexerModel(File rootFolder, IndexerEnum indexingEnum) {
+        return new File(getSaveModelFolder(rootFolder), indexingEnum.getModelName()).exists();
+
+    }
+
+    public static boolean checkExistClassifierModel(File rootFolder, ClassifierEnum classifierEnum, IndexerEnum indexingEnum) {
+        if (classifierEnum == ClassifierEnum.MYLTI_CLASSIFIER) {
+            for (ClassifierEnum ce : ClassifierEnum.values()) {
+                if (ce != ClassifierEnum.MYLTI_CLASSIFIER && !new File(getSaveModelFolder(rootFolder), ClassifierEnum.getFullNameModel(ce, indexingEnum)).exists()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return new File(getSaveModelFolder(rootFolder), ClassifierEnum.getFullNameModel(classifierEnum, indexingEnum)).exists();
     }
 
 }

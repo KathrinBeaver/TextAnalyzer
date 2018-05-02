@@ -103,10 +103,10 @@ public class Doc2VecUtils {
         pv.getLookupTable().plotVocab(pv.getLookupTable().layerSize(), outPutFile);
     }
 
+    @Deprecated
     public static List<Pair<String, Double>> getTopics(Doc2Vec doc2Vec, String document) {
         TokenizerFactory tokenizerFactory = new DefaultTokenizerFactory();
         tokenizerFactory.setTokenPreProcessor(new MyPreprocessor());
-
         ParagraphVectors pv = doc2Vec.getParagraphVectors();
         MeansBuilder meansBuilder = new MeansBuilder(
                 (InMemoryLookupTable<VocabWord>) pv.getLookupTable(),

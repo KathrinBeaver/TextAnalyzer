@@ -9,7 +9,7 @@ package com.mai.textanalyzer.classifier.common;
  *
  * @author Sergey
  */
-public class AccuracyPredicion extends Prediction implements Comparable<AccuracyPredicion> {
+public class AccuracyPredicion extends Prediction {
 
     private final double accuracy;
     private final int docCount;
@@ -26,11 +26,6 @@ public class AccuracyPredicion extends Prediction implements Comparable<Accuracy
 
     public int getDocCount() {
         return docCount;
-    }
-
-    @Override
-    public int compareTo(AccuracyPredicion o) {
-        return getTopic().compareTo(o.getTopic());
     }
 
 }

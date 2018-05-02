@@ -5,22 +5,25 @@
  */
 package com.mai.textanalyzer.web.vaadin.pages.classification;
 
-import com.mai.textanalyzer.indexing.doc2vec.Doc2Vec;
-import com.mai.textanalyzer.indexing.doc2vec.Doc2VecUtils;
-import com.mai.textanalyzer.ui.file_upload.DocUploader;
+import com.mai.textanalyzer.classifier.common.ClassifierEnum;
+import com.mai.textanalyzer.classifier.common.Prediction;
+import com.mai.textanalyzer.classifier.common.TextClassifier;
+import com.mai.textanalyzer.indexing.common.Indexer;
+import com.mai.textanalyzer.indexing.common.IndexerEnum;
+import com.mai.textanalyzer.ui.classifier.ClassifierTable;
+import com.mai.textanalyzer.ui.file_upload.UploadPanel;
 import com.mai.textanalyzer.ui.indexing.VectorizationPanel;
+import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.Upload;
 import com.vaadin.ui.VerticalLayout;
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
+import java.util.Collections;
+import java.util.List;
 import org.apache.log4j.Logger;
-import org.nd4j.linalg.primitives.Pair;
+import org.nd4j.linalg.api.ndarray.INDArray;
 
 /**
  *
@@ -28,76 +31,81 @@ import org.nd4j.linalg.primitives.Pair;
  */
 public class ClassificationComponent extends CustomComponent {
 
-    private final File saveModelFile = new File("G:/DocForTest/SaveModel/1/Doc2Vec");
-
-    private final VectorizationPanel panel = new VectorizationPanel();
-    private Doc2Vec doc2Vec;
-    private final DocUploader receiver = new DocUploader();
-    private final Upload upload = new Upload("Загрузите текст здесь", receiver);
+    private final VectorizationPanel indexerPanel = new VectorizationPanel();
+    private final UploadPanel uploadPanel = new UploadPanel();
     private final Button startClassificationButton = new Button("Начать классификацию");
     private static final Logger LOG = Logger.getLogger(ClassificationComponent.class);
+    private final ClassifierTable classifierTable = new ClassifierTable(LoadingComponents.getRootDir());
     private final Table topicTable = new Table("Совпадения с темами:");
 
     public ClassificationComponent() {
         initComponents();
-        initListiners(upload);
+        initListiners();
     }
 
     private void initComponents() {
         final HorizontalLayout hLayout = new HorizontalLayout();
         hLayout.setSpacing(true);
-
-        upload.setButtonCaption("Начать загрузку");
-        upload.addSucceededListener(receiver);
         startClassificationButton.setEnabled(true);
-        hLayout.addComponents(panel);
-        hLayout.addComponents(upload);
-        hLayout.addComponents(startClassificationButton);
-        startClassificationButton.setEnabled(false);
+        hLayout.addComponents(indexerPanel);
+        hLayout.addComponents(classifierTable);
+        hLayout.addComponents(uploadPanel);
         hLayout.setMargin(true);
         hLayout.setSpacing(true);
 
         topicTable.addContainerProperty("Имя категории", String.class, null);
-        topicTable.addContainerProperty("Близость к категории [-1,1]", Double.class, null);
+        topicTable.addContainerProperty("Вероятность принадлежности к категории", String.class, null);
 
         VerticalLayout vLayout = new VerticalLayout();
         vLayout.addComponent(hLayout);
+        vLayout.addComponent(startClassificationButton);
         vLayout.addComponent(topicTable);
 
         setCompositionRoot(vLayout);
-
-//        doc2Vec = Doc2VecUtils.loadModel(saveModelFile);
     }
 
-    private void initListiners(Upload upload) {
-        upload.addProgressListener(new Upload.ProgressListener() {
-            private static final long serialVersionUID = 4728847902678459488L;
-
+    private void initListiners() {
+        indexerPanel.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
-            public void updateProgress(long readBytes, long contentLength) {
-                Notification.show("Загрузка", readBytes + "", Notification.Type.TRAY_NOTIFICATION);
+            public void valueChange(Property.ValueChangeEvent event) {
+                classifierTable.setIndexerEnum(indexerPanel.getValue());
             }
         });
 
-        upload.addFinishedListener((event) -> {
-            Notification.show("Загрузка", "Загрузка завершена", Notification.Type.HUMANIZED_MESSAGE);
-//            receiver.getStream();
-            startClassificationButton.setEnabled(true);
-        });
         startClassificationButton.addClickListener((Button.ClickEvent event) -> {
-            Notification.show("Обработка", "Началась обработка текста", Notification.Type.HUMANIZED_MESSAGE);
-            String document = null;
-            try {
-                document = receiver.getDoc();
-            } catch (UnsupportedEncodingException ex) {
-                java.util.logging.Logger.getLogger(ClassificationComponent.class.getName()).log(Level.SEVERE, null, ex);
+            topicTable.removeAllItems();
+            String document = uploadPanel.getDocument();
+            if (document == null || document.isEmpty()) {
+                Notification.show("", "Документ не загружен", Notification.Type.HUMANIZED_MESSAGE);
+                return;
             }
+            ClassifierEnum selectedClassifier = classifierTable.getSelectedValue();
+            if (selectedClassifier == null) {
+                Notification.show("", "Не выбран классификатор", Notification.Type.HUMANIZED_MESSAGE);
+                return;
+            }
+            IndexerEnum indexerEnum = indexerPanel.getValue();
+            TextClassifier textClassifier = LoadingComponents.getClassifier(selectedClassifier, indexerEnum);
+            if (textClassifier == null) {
+                Notification.show("", "Выбранный классификатор еще не обучен", Notification.Type.HUMANIZED_MESSAGE);
+                return;
+            }
+            Indexer indexer = LoadingComponents.getIndexer(indexerPanel.getValue());
+            INDArray iNDArray = indexer.getIndex(document);
+            if (iNDArray == null) {
+                Notification.show("", "В тексте недостаточно информации для его классификации", Notification.Type.HUMANIZED_MESSAGE);
+                return;
+            }
+            List<Prediction> predictions = textClassifier.getDistribution(iNDArray);
             int count = 1;
-            for (Pair<String, Double> pairs : Doc2VecUtils.getTopics(doc2Vec, document)) {
-                topicTable.addItem(new Object[]{pairs.getFirst(), pairs.getSecond()}, count);
+            for (Prediction prediction : predictions) {
+                topicTable.addItem(new Object[]{prediction.getTopic(), String.format("%.2f", prediction.getValue() * 100)}, count);
                 count++;
             }
             topicTable.setPageLength(topicTable.size());
+            Object[] properties = {"Вероятность принадлежности к категории", "Имя категории"};
+            boolean[] ordering = {false, true};
+            topicTable.sort(properties, ordering);
         });
 
     }

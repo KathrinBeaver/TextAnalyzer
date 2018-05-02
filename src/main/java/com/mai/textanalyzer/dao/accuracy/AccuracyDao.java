@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -32,6 +34,12 @@ public class AccuracyDao implements IAccuracyDao {
     public void deleteAllDataFromAccuracy() {
         String sql = "DELETE FROM cls.accuracy";
         jdbcTemplate.update(sql, new MapSqlParameterSource());
+        jdbcTemplate.query("Select * FROM cls.accuracy ", new ResultSetExtractor<Object>() {
+            @Override
+            public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+                return null;
+            }
+        });
     }
 
     @Override
