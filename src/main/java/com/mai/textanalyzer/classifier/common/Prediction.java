@@ -64,7 +64,12 @@ public class Prediction implements Comparable<Prediction> {
 
     @Override
     public int compareTo(Prediction t) {
-        return (int) (value - t.value);
+        return Double.compare(value, t.value);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%.2f", value * 100);
     }
 
 }

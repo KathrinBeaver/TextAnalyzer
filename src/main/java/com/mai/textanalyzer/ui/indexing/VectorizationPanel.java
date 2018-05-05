@@ -47,7 +47,6 @@ public class VectorizationPanel extends CustomField<IndexerEnum> {
         cb.setWidth("250px");
         Panel panel = new Panel(new FormLayout(cb));
         panel.setCaption("Выберете способ векторизации:");
-        panel.setWidth("100%");
 
         cb.addValueChangeListener((event) -> {
             this.setValue((IndexerEnum) cb.getValue());

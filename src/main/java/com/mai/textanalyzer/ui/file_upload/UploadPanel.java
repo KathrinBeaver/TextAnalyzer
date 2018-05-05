@@ -32,18 +32,21 @@ public class UploadPanel extends CustomComponent {
     public UploadPanel() {
 
         area.setWidth("650");
-        area.setHeight("350");
+        area.setHeight("250");
         area.setWordwrap(false);
+        upload.setSizeFull();
         upload.setButtonCaption("загрузить текст");
         upload.addSucceededListener(receiver);
 
         VerticalLayout layout = new VerticalLayout();
+        layout.setSizeFull();
         layout.addComponent(area);
         layout.addComponent(buttonArea);
         layout.addComponent(upload);
         layout.addComponent(labelInfo);
 
         Panel uploadPanel = new Panel("Загрузка текста");
+        uploadPanel.setSizeFull();
         uploadPanel.setContent(layout);
         initListeners();
         this.setCompositionRoot(uploadPanel);

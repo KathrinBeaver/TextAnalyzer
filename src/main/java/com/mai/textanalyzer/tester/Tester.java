@@ -39,23 +39,25 @@ public class Tester {
         ApplicationContextHolder.initializeApplicationContext();
 
         IAccuracyDao iAccuracyDao = ApplicationContextHolder.getApplicationContext().getBean(IAccuracyDao.class);
-        iAccuracyDao.deleteAllDataFromAccuracy();
+//        iAccuracyDao.deleteAllDataFromAccuracy();
 
-        File rootFolder = new File("E:\\DataForClassifier\\RootFolderSize567");
+        File rootFolder = new File("E:\\DataForClassifier\\RootFolderSize62407");
         createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.NAIVE_BAYES);
         testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.NAIVE_BAYES, true);
 
         createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.IBK);
         testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.IBK, true);
+
         createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.SVM);
         testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.SVM, true);
+
         createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.LR);
         testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.LR, true);
 
         createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.RF);
         testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.RF, true);
 
-//        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.MYLTI_CLASSIFIER, false);
+        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.MYLTI_CLASSIFIER, false);
     }
 
     private static void createModel(File rootFolder, IndexerEnum indexerEnum, ClassifierEnum classifierEnum) {

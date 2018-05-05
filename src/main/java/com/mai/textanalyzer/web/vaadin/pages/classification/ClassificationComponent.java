@@ -16,8 +16,10 @@ import com.mai.textanalyzer.ui.indexing.VectorizationPanel;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import java.util.Collections;
@@ -36,7 +38,16 @@ public class ClassificationComponent extends CustomComponent {
     private final Button startClassificationButton = new Button("Начать классификацию");
     private static final Logger LOG = Logger.getLogger(ClassificationComponent.class);
     private final ClassifierTable classifierTable = new ClassifierTable(LoadingComponents.getRootDir());
-    private final Table topicTable = new Table("Совпадения с темами:");
+    private final Table topicTable = new Table("Совпадения с темами:") {
+        @Override
+        protected String formatPropertyValue(Object rowId,
+                Object colId, Property property) {
+            if (property.getType() == Prediction.class && property.getValue() != null) {
+                return ((Prediction) property.getValue()).toString();
+            }
+            return super.formatPropertyValue(rowId, colId, property);
+        }
+    };
 
     public ClassificationComponent() {
         initComponents();
@@ -44,24 +55,29 @@ public class ClassificationComponent extends CustomComponent {
     }
 
     private void initComponents() {
+
         final HorizontalLayout hLayout = new HorizontalLayout();
         hLayout.setSpacing(true);
+        hLayout.setMargin(true);
         startClassificationButton.setEnabled(true);
         hLayout.addComponents(indexerPanel);
         hLayout.addComponents(classifierTable);
         hLayout.addComponents(uploadPanel);
-        hLayout.setMargin(true);
-        hLayout.setSpacing(true);
 
         topicTable.addContainerProperty("Имя категории", String.class, null);
-        topicTable.addContainerProperty("Вероятность принадлежности к категории", String.class, null);
+        topicTable.addContainerProperty("Вероятность принадлежности к категории", Prediction.class, null);
 
         VerticalLayout vLayout = new VerticalLayout();
+        vLayout.setSizeFull();
         vLayout.addComponent(hLayout);
         vLayout.addComponent(startClassificationButton);
+        topicTable.setSizeFull();
         vLayout.addComponent(topicTable);
 
-        setCompositionRoot(vLayout);
+        Panel resultPanel = new Panel("resultPanel");
+        resultPanel.setSizeFull();
+        resultPanel.setContent(vLayout);
+        setCompositionRoot(resultPanel);
     }
 
     private void initListiners() {
@@ -99,7 +115,7 @@ public class ClassificationComponent extends CustomComponent {
             List<Prediction> predictions = textClassifier.getDistribution(iNDArray);
             int count = 1;
             for (Prediction prediction : predictions) {
-                topicTable.addItem(new Object[]{prediction.getTopic(), String.format("%.2f", prediction.getValue() * 100)}, count);
+                topicTable.addItem(new Object[]{prediction.getTopic(), prediction}, count);
                 count++;
             }
             topicTable.setPageLength(topicTable.size());
