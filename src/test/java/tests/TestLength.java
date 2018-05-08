@@ -3,14 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mai.textanalyzer.classifier.common;
+package tests;
 
 /**
  *
  * @author Sergey
  */
-public enum ClassifierTypeEnum {
-    WEKA_CLASSIFIER,
-    NEURAL_NETWORK_CLASSIFIER,
-    MYLTI_CLASSIFIER;
+public class TestLength {
+
+    public static void main(String[] args) {
+        String[] str = new String[5];
+        System.out.println(str.length);
+    }
+
 }

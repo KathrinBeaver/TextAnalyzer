@@ -19,6 +19,7 @@ public enum ClassifierEnum {
     LR(4, "Logistic Regression", ClassifierTypeEnum.WEKA_CLASSIFIER),
     RF(5, "Random Forest", ClassifierTypeEnum.WEKA_CLASSIFIER),
     MYLTI_CLASSIFIER(7, "Multi Classifier", ClassifierTypeEnum.MYLTI_CLASSIFIER);
+//    BAGGING(8, "Bagging", ClassifierTypeEnum.WEKA_CLASSIFIER);
     private final int id;
     private final String nameModel;
     private final ClassifierTypeEnum classifierType;

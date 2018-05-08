@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class LoadingComponents {
 
-    private final static File rootDir = new File("E:\\DataForClassifier\\RootFolderSize567");
+    private final static File rootDir = new File("E:\\DataForClassifier\\RootFolderSize200");
     private final static Indexer doc2vec;
     private final static Indexer tfIdf;
     private final static List<TextClassifier> doc2vecClassifiers;

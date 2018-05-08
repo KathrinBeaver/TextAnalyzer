@@ -59,7 +59,14 @@ public class WekaClassifier implements Serializable, TextClassifier {
         // Create dataset with initial capacity of 100, and set index of class.
         data = new Instances(nameOfDataset, attributes, 100);
         data.setClassIndex(data.numAttributes() - 1);
+    }
 
+    public WekaClassifier(ClassifierEnum classifierEnum, AbstractClassifier classifier, Instances data, List<String> topics) {
+        this.classifierEnum = classifierEnum;
+        this.classifier = classifier;
+        this.topics = topics;
+        this.data = data;
+        buildClassifier();
     }
 
     /**
@@ -74,7 +81,7 @@ public class WekaClassifier implements Serializable, TextClassifier {
 
     }
 
-    public void buildClassifier() {
+    public final void buildClassifier() {
         Instances instances = new Instances(data);
         try {
             classifier.buildClassifier(instances);

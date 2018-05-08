@@ -39,11 +39,6 @@ public final class Creater {
     private Creater() {
     }
 
-    public static void main(String[] args) {
-        File rootFolder = new File("E:\\DataForClassifier\\RootFolderSize104626");
-        createAndSaveDoc2Vec(rootFolder);
-    }
-
     public static File getDocForLearningFolder(File rootDir) {
         return new File(rootDir, DOC_FOR_LEARNING_FOLDER);
     }
@@ -109,12 +104,12 @@ public final class Creater {
         throw new UnsupportedOperationException("Support " + indexingEnum + " yet not adding");
     }
 
-    public static void createAndSaveClassifier(File rootFolder, ClassifierEnum classifier, IndexerEnum indexingEnum) {
+    public static void createAndSaveClassifier(File rootFolder, ClassifierEnum classifier, IndexerEnum indexingEnum, boolean useCSV) {
         String modelName = ClassifierEnum.getFullNameModel(classifier, indexingEnum);
         checkRootFolderStructure(rootFolder, modelName, true);
         Indexer indexer = loadIndexer(indexingEnum, rootFolder);
         if (classifier.getClassifierType() == ClassifierTypeEnum.WEKA_CLASSIFIER) {
-            WekaClassifier wc = CreaterWekaClassifier.getClassifier(classifier, indexer, rootFolder);
+            WekaClassifier wc = CreaterWekaClassifier.getClassifier(classifier, indexer, rootFolder, useCSV);
             File folderForSave = new File(getSaveModelFolder(rootFolder), modelName);
             WekaUtils.saveModel(wc, folderForSave);
         } else if (classifier.getClassifierType() == ClassifierTypeEnum.MYLTI_CLASSIFIER) {

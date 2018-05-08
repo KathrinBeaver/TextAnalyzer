@@ -7,19 +7,33 @@ package com.mai.textanalyzer.classifier.weka_classifier;
 
 import com.mai.textanalyzer.classifier.common.ClassifierEnum;
 import static com.mai.textanalyzer.creater.Creater.getDocForLearningFolder;
+import static com.mai.textanalyzer.csv.CSVUtils.getDataCSVFile;
+import com.mai.textanalyzer.csv.DataType;
 import com.mai.textanalyzer.indexing.common.BasicTextModel;
 import com.mai.textanalyzer.indexing.common.Indexer;
+import com.mai.textanalyzer.indexing.common.IndexerEnum;
 import com.mai.textanalyzer.indexing.common.IndexingUtils;
 import com.mai.textanalyzer.word_processing.RusUTF8FileLabelAwareIterator;
 import java.io.File;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.deeplearning4j.text.documentiterator.LabelledDocument;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.functions.LinearRegression;
 import weka.classifiers.functions.Logistic;
 import weka.classifiers.functions.SMO;
+import weka.classifiers.functions.SimpleLogistic;
 import weka.classifiers.lazy.IBk;
+import weka.classifiers.meta.AdaBoostM1;
+import weka.classifiers.meta.Bagging;
+import weka.classifiers.meta.LogitBoost;
+import weka.classifiers.trees.J48;
 import weka.classifiers.trees.RandomForest;
+import weka.classifiers.trees.RandomTree;
+import weka.core.Instances;
+import weka.core.converters.ConverterUtils.DataSource;
 
 /**
  *
@@ -27,7 +41,7 @@ import weka.classifiers.trees.RandomForest;
  */
 public class CreaterWekaClassifier {
 
-    public static WekaClassifier getClassifier(ClassifierEnum classifier, Indexer indexer, File rootFolder) {
+    public static WekaClassifier getClassifier(ClassifierEnum classifier, Indexer indexer, File rootFolder, boolean useCSV) {
         AbstractClassifier abstractClassifier;
         if (classifier == ClassifierEnum.NAIVE_BAYES) {
             abstractClassifier = new NaiveBayes();
@@ -42,15 +56,34 @@ public class CreaterWekaClassifier {
             }
             abstractClassifier = iBk;
         } else if (classifier == ClassifierEnum.LR) {
-            abstractClassifier = new Logistic();
+            abstractClassifier = new SimpleLogistic();
         } else if (classifier == ClassifierEnum.RF) {
-            abstractClassifier = new RandomForest();
+            abstractClassifier = new J48();
+//        } else if (classifier == ClassifierEnum.BAGGING) {
+//            Bagging bagging = new Bagging();
+//            bagging.setClassifier(new NaiveBayes());
+//            abstractClassifier = bagging;
+//        } else if (classifier == ClassifierEnum.BAGGING) {
+//            AdaBoostM1 adaBoost = new AdaBoostM1();
+//            adaBoost.setClassifier(new NaiveBayes());
+//            abstractClassifier = bagging;
         } else {
             throw new UnsupportedOperationException("Classifier support for" + classifier.name() + " not yet added");
         }
         File folderWithDataForLearning = getDocForLearningFolder(rootFolder);
         List<String> topics = IndexingUtils.getTopics(folderWithDataForLearning);
-
+        if (useCSV) {
+            try {
+                Instances data = DataSource.read(getDataCSVFile(rootFolder, indexer.getIndexerEnum(), DataType.LEARNING).getPath());
+                System.out.println("Instances from csv loadeds");
+                if (data.classIndex() == -1) {
+                    data.setClassIndex(data.numAttributes() - 1);
+                }
+                return new WekaClassifier(classifier, abstractClassifier, data, topics);
+            } catch (Exception ex) {
+                Logger.getLogger(CreaterWekaClassifier.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         WekaClassifier wc = new WekaClassifier(classifier, abstractClassifier, indexer.getDimensionSize(), topics);
         RusUTF8FileLabelAwareIterator tearchingIterator = new RusUTF8FileLabelAwareIterator.Builder()
                 .addSourceFolder(folderWithDataForLearning)

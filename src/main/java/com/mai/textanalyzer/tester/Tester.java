@@ -21,10 +21,17 @@ import org.deeplearning4j.text.documentiterator.LabelledDocument;
 import org.deeplearning4j.text.documentiterator.LabelsSource;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import com.mai.textanalyzer.creater.SaveModelException;
+import com.mai.textanalyzer.csv.CSVUtils;
+import com.mai.textanalyzer.csv.DataType;
 import com.mai.textanalyzer.dao.accuracy.Accuracy;
 import com.mai.textanalyzer.dao.accuracy.IAccuracyDao;
 import com.mai.textanalyzer.dao.accuracy.IAccuracyService;
 import com.mai.textanalyzer.dao.common.ApplicationContextHolder;
+import com.mai.textanalyzer.indexing.common.BasicTextModel;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -42,25 +49,24 @@ public class Tester {
 //        iAccuracyDao.deleteAllDataFromAccuracy();
 
         File rootFolder = new File("E:\\DataForClassifier\\RootFolderSize62407");
-        createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.NAIVE_BAYES);
-        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.NAIVE_BAYES, true);
+//        createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.NAIVE_BAYES, true);
+//        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.NAIVE_BAYES, true, true);
+//
+//        createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.IBK, true);
+//        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.IBK, true, true);
+//
+//        createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.SVM, true);
+//        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.SVM, true, true);
 
-        createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.IBK);
-        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.IBK, true);
+//        createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.BAGGING, true);
+//        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.BAGGING, false, true);
+//        createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.RF, true);
+//        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.RF, true, true);
 
-        createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.SVM);
-        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.SVM, true);
-
-        createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.LR);
-        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.LR, true);
-
-        createModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.RF);
-        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.RF, true);
-
-        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.MYLTI_CLASSIFIER, false);
+//        testModel(rootFolder, IndexerEnum.DOC2VEC, ClassifierEnum.MYLTI_CLASSIFIER, true, true);
     }
 
-    private static void createModel(File rootFolder, IndexerEnum indexerEnum, ClassifierEnum classifierEnum) {
+    private static void createModel(File rootFolder, IndexerEnum indexerEnum, ClassifierEnum classifierEnum, boolean useCSV) {
         OutputStream os = null;
         try {
             log.info("Start create " + indexerEnum);
@@ -78,7 +84,7 @@ public class Tester {
             curTime = System.currentTimeMillis();
             log.info("Start create " + classifierEnum);
             try {
-                Creater.createAndSaveClassifier(rootFolder, classifierEnum, indexerEnum);
+                Creater.createAndSaveClassifier(rootFolder, classifierEnum, indexerEnum, useCSV);
                 info = "Create time for " + classifierEnum + ": " + ((double) (System.currentTimeMillis() - curTime) / 1000) + " c.";
             } catch (SaveModelException ignore) {
                 info = "Сохраненая модель " + classifierEnum + " уже существует\n";
@@ -96,33 +102,50 @@ public class Tester {
         }
     }
 
-    private static void testModel(File rootFolder, IndexerEnum indexerEnum, ClassifierEnum classifierEnum, boolean updateInfoInDB) {
+    private static void testModel(File rootFolder, IndexerEnum indexerEnum, ClassifierEnum classifierEnum, boolean updateInfoInDB, boolean useCSV) {
         OutputStream os = null;
         try {
             os = new FileOutputStream(new File(Creater.getSaveModelFolder(rootFolder), ClassifierEnum.getFullNameModel(classifierEnum, indexerEnum) + "Log.txt"));
             String info = "Test " + ClassifierEnum.getFullNameModel(classifierEnum, indexerEnum);
             log.info(info);
             os.write(info.getBytes(), 0, info.length());
-            Indexer indexer = Creater.loadIndexer(indexerEnum, rootFolder);
-            info = "DimensionSize: " + indexer.getDimensionSize();
-            log.info(info);
-            os.write(info.getBytes(), 0, info.length());
             TextClassifier wc = Creater.loadClassifier(rootFolder, classifierEnum, indexerEnum);
-            RusUTF8FileLabelAwareIterator testingIteratorTest = new RusUTF8FileLabelAwareIterator.Builder()
-                    .addSourceFolder(Creater.getDocForTestFolder(rootFolder))
-                    .build();
-            LabelsSource labelsSource = testingIteratorTest.getLabelsSource();
-            int size = testingIteratorTest.getSize();
-            Evaluation eval = new Evaluation(labelsSource.size());
-            int count = 0;
-            while (testingIteratorTest.hasNext()) {
-                LabelledDocument next = testingIteratorTest.next();
-                INDArray matrixTextModel = indexer.getIndex(next.getContent());
-                String predict = wc.classifyMessage(matrixTextModel);
-                String topic = next.getLabel();
-                count++;
-                System.out.println(count + "/" + size + ": " + topic + " - " + predict);
-                eval.eval(labelsSource.indexOf(predict), labelsSource.indexOf(topic));
+            Evaluation eval;
+            List<String> labelsSource;
+            if (useCSV) {
+                List<BasicTextModel> dataList = CSVUtils.readCSVData(CSVUtils.getDataCSVFile(rootFolder, indexerEnum, DataType.TEST));
+                Set<String> topicList = new HashSet<>();
+                for (BasicTextModel textModel : dataList) {
+                    topicList.add(textModel.getTopic());
+                }
+                labelsSource = new ArrayList<>(topicList);
+                eval = new Evaluation(labelsSource.size());
+                int size = dataList.size();
+                int count = 0;
+                for (BasicTextModel textModel : dataList) {
+                    String predict = wc.classifyMessage(textModel.getiNDArray());
+                    count++;
+                    System.out.println(count + "/" + size + ": " + textModel.getTopic() + " - " + predict);
+                    eval.eval(labelsSource.indexOf(predict), labelsSource.indexOf(textModel.getTopic()));
+                }
+            } else {
+                RusUTF8FileLabelAwareIterator testingIteratorTest = new RusUTF8FileLabelAwareIterator.Builder()
+                        .addSourceFolder(Creater.getDocForTestFolder(rootFolder))
+                        .build();
+                Indexer indexer = Creater.loadIndexer(indexerEnum, rootFolder);
+                labelsSource = testingIteratorTest.getLabelsSource().getLabels();
+                int size = testingIteratorTest.getSize();
+                eval = new Evaluation(labelsSource.size());
+                int count = 0;
+                while (testingIteratorTest.hasNext()) {
+                    LabelledDocument next = testingIteratorTest.next();
+                    INDArray matrixTextModel = indexer.getIndex(next.getContent());
+                    String predict = wc.classifyMessage(matrixTextModel);
+                    String topic = next.getLabel();
+                    count++;
+                    System.out.println(count + "/" + size + ": " + topic + " - " + predict);
+                    eval.eval(labelsSource.indexOf(predict), labelsSource.indexOf(topic));
+                }
             }
             info = eval.stats(true) + "\n";
             log.info(info);
@@ -134,7 +157,7 @@ public class Tester {
                         .addSourceFolder(Creater.getDocForLearningFolder(rootFolder))
                         .build();
             }
-            for (String label : labelsSource.getLabels()) {
+            for (String label : labelsSource) {
                 double accuracy = eval.f1(labelsSource.indexOf(label));
                 if (updateInfoInDB) {
                     ApplicationContext applicationContext = ApplicationContextHolder.getApplicationContext();

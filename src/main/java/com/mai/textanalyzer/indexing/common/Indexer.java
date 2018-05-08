@@ -17,4 +17,6 @@ public interface Indexer {
 
     public int getDimensionSize();
 
+    public IndexerEnum getIndexerEnum();
+
 }
