@@ -14,10 +14,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
 
 /**
  *
@@ -27,13 +30,19 @@ public class MultiClassifier implements TextClassifier {
 
     private final static IndexerEnum INDEXER_ENUM = IndexerEnum.DOC2VEC;
     private final List<AccuracyClassifier> classifierList = new ArrayList<>();
+    private final List<String> topicList;
 
     public MultiClassifier(File rootDir) {
         classifierList.add(new AccuracyClassifier(rootDir, ClassifierEnum.NAIVE_BAYES, INDEXER_ENUM));
         classifierList.add(new AccuracyClassifier(rootDir, ClassifierEnum.IBK, INDEXER_ENUM));
-        classifierList.add(new AccuracyClassifier(rootDir, ClassifierEnum.SVM, INDEXER_ENUM));
+//        classifierList.add(new AccuracyClassifier(rootDir, ClassifierEnum.SVM, INDEXER_ENUM));
         classifierList.add(new AccuracyClassifier(rootDir, ClassifierEnum.LR, INDEXER_ENUM));
         classifierList.add(new AccuracyClassifier(rootDir, ClassifierEnum.RF, INDEXER_ENUM));
+        Set<String> topicSet = new HashSet<>();
+        for (AccuracyClassifier classifier : classifierList) {
+            topicSet.addAll(classifier.getTopicList());
+        }
+        topicList = new ArrayList<>(topicSet);
     }
 
     @Override
@@ -60,7 +69,7 @@ public class MultiClassifier implements TextClassifier {
 
     @Override
     public List<String> getTopicList() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return topicList;
     }
 
     private List<AccuracyPredicion> calcPredicition(INDArray iNDArray) {
@@ -96,6 +105,15 @@ public class MultiClassifier implements TextClassifier {
     @Override
     public ClassifierEnum getClassifierEnum() {
         return ClassifierEnum.MYLTI_CLASSIFIER;
+    }
+
+    @Override
+    public INDArray getDistributionAsINDArray(INDArray matrixTextModel) {
+        double[] result = new double[topicList.size()];
+        for (Prediction prediction : getDistribution(matrixTextModel)) {
+            result[topicList.indexOf(prediction.getTopic())] = prediction.getValue();
+        }
+        return Nd4j.create(result);
     }
 
 }

@@ -21,4 +21,6 @@ public interface TextClassifier {
     String classifyMessage(INDArray matrixTextModel);
 
     List<Prediction> getDistribution(INDArray matrixTextModel);
+
+    INDArray getDistributionAsINDArray(INDArray matrixTextModel);
 }

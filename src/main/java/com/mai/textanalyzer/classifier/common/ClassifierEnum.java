@@ -13,20 +13,25 @@ import com.mai.textanalyzer.indexing.common.IndexerEnum;
  */
 public enum ClassifierEnum {
 
-    NAIVE_BAYES(1, "Naive Bayes", ClassifierTypeEnum.WEKA_CLASSIFIER),
-    SVM(2, "Support Vector Machine", ClassifierTypeEnum.WEKA_CLASSIFIER),
-    IBK(3, "K-nearest Neighbours", ClassifierTypeEnum.WEKA_CLASSIFIER),
-    LR(4, "Logistic Regression", ClassifierTypeEnum.WEKA_CLASSIFIER),
-    RF(5, "Random Forest", ClassifierTypeEnum.WEKA_CLASSIFIER),
-    MYLTI_CLASSIFIER(7, "Multi Classifier", ClassifierTypeEnum.MYLTI_CLASSIFIER);
-//    BAGGING(8, "Bagging", ClassifierTypeEnum.WEKA_CLASSIFIER);
+    NAIVE_BAYES(1, "Naive Bayes", "Наивный баиесовский классификатор", ClassifierTypeEnum.WEKA_CLASSIFIER),
+    SVM(2, "Support Vector Machine", "свм", ClassifierTypeEnum.WEKA_CLASSIFIER),
+    IBK(3, "K-nearest Neighbours", "к-ближайших", ClassifierTypeEnum.WEKA_CLASSIFIER),
+    LR(4, "Logistic Regression", "логистичекая регрессия", ClassifierTypeEnum.WEKA_CLASSIFIER),
+    RF(5, "Random Forest", "дерево принятия решений", ClassifierTypeEnum.WEKA_CLASSIFIER),
+    NEURAL_NETWORK(6, "Neural_Network", "неронная сеть", ClassifierTypeEnum.NEURAL_NETWORK_CLASSIFIER),
+    MYLTI_CLASSIFIER(7, "Multi Classifier", "мульти классификатор", ClassifierTypeEnum.MYLTI_CLASSIFIER),
+    BAGGING(8, "Bagging", "беггинг", ClassifierTypeEnum.WEKA_CLASSIFIER),
+    BOOSTING(9, "Boostring", "бустинг", ClassifierTypeEnum.WEKA_CLASSIFIER),
+    STACKING(10, "Stacking", "стекинг", ClassifierTypeEnum.WEKA_CLASSIFIER);
     private final int id;
-    private final String nameModel;
+    private final String nameModelForSave;
+    private final String ruName;
     private final ClassifierTypeEnum classifierType;
 
-    private ClassifierEnum(int id, String nameModel, ClassifierTypeEnum classifierType) {
+    private ClassifierEnum(int id, String nameModel, String ruName, ClassifierTypeEnum classifierType) {
         this.id = id;
-        this.nameModel = nameModel;
+        this.nameModelForSave = nameModel;
+        this.ruName = ruName;
         this.classifierType = classifierType;
     }
 
@@ -35,7 +40,11 @@ public enum ClassifierEnum {
     }
 
     public String getModelName() {
-        return nameModel;
+        return nameModelForSave;
+    }
+
+    public String getRuName() {
+        return ruName;
     }
 
     public ClassifierTypeEnum getClassifierType() {
@@ -43,7 +52,7 @@ public enum ClassifierEnum {
     }
 
     public static String getFullNameModel(ClassifierEnum classifierEnum, IndexerEnum indexerEnum) {
-        return classifierEnum.getModelName() + indexerEnum.getModelName();
+        return classifierEnum.getModelName() + indexerEnum.getModelName() + (classifierEnum == NEURAL_NETWORK ? ".zip" : "");
     }
 
     public static ClassifierEnum getClassifierEnumById(int id) {
@@ -57,7 +66,7 @@ public enum ClassifierEnum {
 
     @Override
     public String toString() {
-        return nameModel;
+        return nameModelForSave;
     }
 
 }

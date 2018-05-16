@@ -7,11 +7,11 @@ package com.mai.textanalyzer.classifier.weka_classifier;
 
 import com.mai.textanalyzer.classifier.common.ClassifierEnum;
 import static com.mai.textanalyzer.creater.Creater.getDocForLearningFolder;
+import static com.mai.textanalyzer.creater.Creater.getSaveModelFolder;
 import static com.mai.textanalyzer.csv.CSVUtils.getDataCSVFile;
 import com.mai.textanalyzer.csv.DataType;
 import com.mai.textanalyzer.indexing.common.BasicTextModel;
 import com.mai.textanalyzer.indexing.common.Indexer;
-import com.mai.textanalyzer.indexing.common.IndexerEnum;
 import com.mai.textanalyzer.indexing.common.IndexingUtils;
 import com.mai.textanalyzer.word_processing.RusUTF8FileLabelAwareIterator;
 import java.io.File;
@@ -20,18 +20,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.deeplearning4j.text.documentiterator.LabelledDocument;
 import weka.classifiers.AbstractClassifier;
+import weka.classifiers.Classifier;
 import weka.classifiers.bayes.NaiveBayes;
-import weka.classifiers.functions.LinearRegression;
-import weka.classifiers.functions.Logistic;
 import weka.classifiers.functions.SMO;
 import weka.classifiers.functions.SimpleLogistic;
 import weka.classifiers.lazy.IBk;
 import weka.classifiers.meta.AdaBoostM1;
 import weka.classifiers.meta.Bagging;
-import weka.classifiers.meta.LogitBoost;
+import weka.classifiers.meta.Stacking;
 import weka.classifiers.trees.J48;
-import weka.classifiers.trees.RandomForest;
-import weka.classifiers.trees.RandomTree;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 
@@ -59,14 +56,23 @@ public class CreaterWekaClassifier {
             abstractClassifier = new SimpleLogistic();
         } else if (classifier == ClassifierEnum.RF) {
             abstractClassifier = new J48();
-//        } else if (classifier == ClassifierEnum.BAGGING) {
-//            Bagging bagging = new Bagging();
-//            bagging.setClassifier(new NaiveBayes());
-//            abstractClassifier = bagging;
-//        } else if (classifier == ClassifierEnum.BAGGING) {
-//            AdaBoostM1 adaBoost = new AdaBoostM1();
-//            adaBoost.setClassifier(new NaiveBayes());
-//            abstractClassifier = bagging;
+        } else if (classifier == ClassifierEnum.BAGGING) {
+            Bagging bagging = new Bagging();
+            bagging.setClassifier(new SMO());
+            abstractClassifier = bagging;
+        } else if (classifier == ClassifierEnum.BOOSTING) {
+            AdaBoostM1 adaBoost = new AdaBoostM1();
+            adaBoost.setClassifier(new SMO());
+            abstractClassifier = adaBoost;
+        } else if (classifier == ClassifierEnum.STACKING) {
+            WekaClassifier smo = WekaUtils.loadModel(new File(getSaveModelFolder(rootFolder), ClassifierEnum.getFullNameModel(ClassifierEnum.SVM, indexer.getIndexerEnum())));
+            WekaClassifier nb = WekaUtils.loadModel(new File(getSaveModelFolder(rootFolder), ClassifierEnum.getFullNameModel(ClassifierEnum.NAIVE_BAYES, indexer.getIndexerEnum())));
+            WekaClassifier iBk = WekaUtils.loadModel(new File(getSaveModelFolder(rootFolder), ClassifierEnum.getFullNameModel(ClassifierEnum.IBK, indexer.getIndexerEnum())));
+            WekaClassifier j48tree = WekaUtils.loadModel(new File(getSaveModelFolder(rootFolder), ClassifierEnum.getFullNameModel(ClassifierEnum.IBK, indexer.getIndexerEnum())));
+            Classifier[] stackoptions = new Classifier[]{smo.getClassifier(), nb.getClassifier(), iBk.getClassifier(), j48tree.getClassifier()};
+            Stacking stacking = new Stacking();
+            stacking.setClassifiers(stackoptions);
+            abstractClassifier = stacking;
         } else {
             throw new UnsupportedOperationException("Classifier support for" + classifier.name() + " not yet added");
         }

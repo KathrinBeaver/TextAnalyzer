@@ -71,4 +71,9 @@ public class AccuracyClassifier implements TextClassifier {
         return classifier.getTopicList();
     }
 
+    @Override
+    public INDArray getDistributionAsINDArray(INDArray matrixTextModel) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

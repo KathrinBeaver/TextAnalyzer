@@ -106,10 +106,15 @@ public final class CSVUtils {
             while ((nextLine = reader.readNext()) != null) {
                 if (nextLine != null) {
                     List<Double> featureArray = new ArrayList<>();
+                    int countFeature = 0;
                     for (String feature : nextLine) {
+                        countFeature++;
                         try {
                             featureArray.add(Double.parseDouble(feature));
                         } catch (NumberFormatException ex) {
+                            if (nextLine.length != countFeature) {
+                                break;// метка у нас в самом конце, а файлы бывают битые
+                            }
                             double[] features = new double[featureArray.size()];
                             int count = 0;
                             for (Double value : featureArray) {

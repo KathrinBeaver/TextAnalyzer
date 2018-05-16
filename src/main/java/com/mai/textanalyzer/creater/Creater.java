@@ -112,8 +112,10 @@ public final class Creater {
             WekaClassifier wc = CreaterWekaClassifier.getClassifier(classifier, indexer, rootFolder, useCSV);
             File folderForSave = new File(getSaveModelFolder(rootFolder), modelName);
             WekaUtils.saveModel(wc, folderForSave);
+        } else if (classifier.getClassifierType() == ClassifierTypeEnum.NEURAL_NETWORK_CLASSIFIER) {
+//        NeuralNetworkUtils.
         } else if (classifier.getClassifierType() == ClassifierTypeEnum.MYLTI_CLASSIFIER) {
-            //не сохраняется, а собирается из остальных
+            return;  //не сохраняется, а собирается из остальных
         } else {
             throw new UnsupportedOperationException("Classifier support for" + classifier.getClassifierType() + " not yet added");
         }
@@ -127,6 +129,19 @@ public final class Creater {
         } else if (classifier.getClassifierType() == ClassifierTypeEnum.MYLTI_CLASSIFIER) {
             checkRootFolderStructure(rootFolder, modelName, null);
             return new MultiClassifier(rootFolder);
+        } else {
+            throw new UnsupportedOperationException("UnsupportedOperation");
+        }
+    }
+
+    @Deprecated
+    public static WekaClassifier loadWekaClassifier(File rootFolder, ClassifierEnum classifier, IndexerEnum indexingEnum) {
+        String modelName = ClassifierEnum.getFullNameModel(classifier, indexingEnum);
+        if (classifier.getClassifierType() == ClassifierTypeEnum.WEKA_CLASSIFIER) {
+            checkRootFolderStructure(rootFolder, modelName, false);
+            return WekaUtils.loadModel(new File(getSaveModelFolder(rootFolder), modelName));
+        } else if (classifier.getClassifierType() == ClassifierTypeEnum.MYLTI_CLASSIFIER) {
+            throw new UnsupportedOperationException("UnsupportedOperation");
         } else {
             throw new UnsupportedOperationException("UnsupportedOperation");
         }

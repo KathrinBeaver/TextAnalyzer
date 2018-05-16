@@ -22,7 +22,7 @@ public final class FilesUtils {
     }
 
     public static void main(String[] args) throws IOException {
-        createDocsForTest(new File("E:\\DataForClassifier\\RootFolderSize100000\\DocForLearning"), new File("E:\\DataForClassifier\\RootFolderSize100000\\DocForTest"));
+        createDocsForTest(new File("E:\\DataForClassifier\\RootFolderSizeBalance\\DocForLearning"), new File("E:\\DataForClassifier\\RootFolderSizeBalance\\DocForTest"));
 
     }
 

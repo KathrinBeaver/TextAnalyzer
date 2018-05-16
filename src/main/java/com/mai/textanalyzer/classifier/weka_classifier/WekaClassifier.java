@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.nd4j.linalg.api.iter.NdIndexIterator;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Attribute;
 import weka.core.FastVector;
@@ -37,6 +38,8 @@ public class WekaClassifier implements Serializable, TextClassifier {
     private final List<String> topics;
 
     private final ClassifierEnum classifierEnum;
+
+    private static final long serialVersionUID = 8470791054665484012L;
 
     public WekaClassifier(ClassifierEnum classifierEnum, AbstractClassifier classifier, int iNDArrayLength, List<String> topics) {
         this.classifierEnum = classifierEnum;
@@ -167,8 +170,27 @@ public class WekaClassifier implements Serializable, TextClassifier {
     }
 
     @Override
+    public INDArray getDistributionAsINDArray(INDArray matrixTextModel) {
+        try {
+            if (data.numInstances() == 0) {
+                return null;
+            }
+            Instance instance = makeInstance(matrixTextModel);
+            double[] predictValue = classifier.distributionForInstance(instance);
+            return Nd4j.create(predictValue);
+        } catch (Exception ex) {
+            Logger.getLogger(WekaClassifier.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    @Override
     public List<String> getTopicList() {
         return new ArrayList<>(topics);
+    }
+
+    public AbstractClassifier getClassifier() {
+        return classifier;
     }
 
     @Override
